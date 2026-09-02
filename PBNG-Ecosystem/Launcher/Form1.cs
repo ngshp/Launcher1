@@ -1,4 +1,18 @@
+using System;
 using System.Windows.Forms;
-<UseWPF>true</UseWPF>
-<UseWindowsForms>true</UseWindowsForms> <!-- INI KUNCINYA BIAR Form1.cs BISA -->
-<PackageReference Include="DiscordRPC" Version="1.0.0-b20190621" />
+
+namespace PBNG.Launcher
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // TODO: logic lama Toko
+        }
+    }
+}
