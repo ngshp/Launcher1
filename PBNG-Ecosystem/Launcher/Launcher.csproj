@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWindowsForms>false</UseWindowsForms>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>
