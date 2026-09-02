@@ -1,3 +1,5 @@
+![PBNG Launcher Banner](docs/banner.png)
+
 # PBNG Launcher - PACKAGE 5 IN 1 PRO MAX
 ## Build #105 - ALL FEATURES
 
