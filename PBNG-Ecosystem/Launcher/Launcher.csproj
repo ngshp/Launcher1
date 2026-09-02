@@ -1,15 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-
     <OutputType>WinExe</OutputType>
-
-    <TargetFramework>net8.-windows</TargetFramework>
-
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
+    <!-- optional: biar gak warning di build Windows -->
+    <UseWindowsForms>false</UseWindowsForms>
   </PropertyGroup>
 
 </Project>
