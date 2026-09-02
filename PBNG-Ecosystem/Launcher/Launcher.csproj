@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DiscordRPC" Version="1.0.175.0" />
+    <!-- FIX: Package yang bener Lachee.DiscordRPC, bukan DiscordRPC -->
+    <PackageReference Include="Lachee.DiscordRPC" Version="1.0.175.0" />
   </ItemGroup>
 
   <ItemGroup>
