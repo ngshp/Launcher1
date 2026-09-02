@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using PBNG.Launcher.Services;
 
@@ -5,19 +6,40 @@ namespace PBNG.Launcher
 {
     public partial class MainWindow : Window
     {
-        private DiscordService? _discord;
-
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += OnLoaded;
-            Closed += (s, e) => _discord?.Dispose();
+            Loaded += MainWindow_Loaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            _discord = new DiscordService();
-            _discord.Init();
+            // Discord presence update
+            App.Discord?.SetPresence("In PBNG Launcher", "Browsing Games");
+
+            // Check update dari GitHub
+            try
+            {
+                var (hasUpdate, latestVer, downloadUrl) = await App.Updater.CheckAsync();
+                if (hasUpdate)
+                {
+                    var result = MessageBox.Show(
+                        $"Update v{latestVer} tersedia!\nMau update sekarang?",
+                        "PBNG Launcher - Update Available",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Information);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        App.Discord?.SetPresence($"Updating to v{latestVer}", "Downloading...");
+                        await App.Updater.DownloadAndInstallAsync(downloadUrl);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Update check failed: " + ex.Message);
+            }
         }
     }
 }
