@@ -1,3 +1,5 @@
+![PBNG Launcher Banner](docs/banner.png)
+
 # 🚀 PBNG Launcher - v1.0.104 SUCCESS
 
 ![Build](https://img.shields.io/badge/Build-%23104%20SUCCESS-brightgreen?style=for-the-badge)
@@ -64,7 +66,7 @@ dotnet publish PBNG-Ecosystem/Launcher/Launcher.csproj -c Release -r win-x64 --s
 
 ### 🎮 Tentang PBNG
 
-**PBNG Launcher** adalah launcher resmi untuk Point Blank Next Generation Ecosystem - private server Point Blank Indonesia untuk nostalgia & komunitas.
+**PBNG Launcher** adalah launcher resmi untuk Point Blank Next Generation Ecosystem - public server Point Blank Indonesia untuk nostalgia & komunitas.
 
 Dibuat oleh **ngshp** dengan cinta untuk player PBNG. Ringan, cepat, no ribet, selalu update!
 
