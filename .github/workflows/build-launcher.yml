@@ -21,12 +21,11 @@ jobs:
 
       - name: Clean old workflows
         run: |
-          if (Test-Path ".github/workflows/build.yml") { Remove-Item ".github/workflows/build.yml" -Force; Write-Host "Deleted old build.yml" }
+          if (Test-Path ".github/workflows/build.yml") { Remove-Item ".github/workflows/build.yml" -Force }
           dir .github/workflows
 
       - name: Find csproj
-        run: |
-          Get-ChildItem -Recurse -Filter *.csproj | ForEach-Object { Write-Host $_.FullName }
+        run: Get-ChildItem -Recurse -Filter *.csproj | ForEach-Object { $_.FullName }
 
       - name: Restore & Build
         run: |
@@ -43,20 +42,14 @@ jobs:
           choco install innosetup -y
           echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Check Inno files
-        run: |
-          if (Test-Path "PBNG-Ecosystem/Launcher/PBNG-Setup.iss") { Write-Host "ISS found" } else { Write-Host "ISS NOT FOUND - skipping installer"; exit 0 }
-          if (Test-Path "publish/Launcher.exe") { Write-Host "Launcher.exe found" } else { dir publish }
-
       - name: Build Installer
         run: |
+          New-Item -ItemType Directory -Force -Path installer | Out-Null
           if (Test-Path "PBNG-Ecosystem/Launcher/PBNG-Setup.iss") {
             iscc PBNG-Ecosystem/Launcher/PBNG-Setup.iss
-            if (Test-Path "installer/PBNG-Setup.exe") { Move-Item "installer/PBNG-Setup.exe" "installer/PBNG-Setup-v1.0.104.exe" -Force }
             dir installer
           } else {
-            Write-Host "Skipping installer build - ISS not found"
-            New-Item -ItemType Directory -Force -Path installer
+            Write-Host "ISS not found - using exe as installer"
             Copy-Item "publish/Launcher.exe" "installer/PBNG-Setup-v1.0.104.exe" -Force
           }
 
@@ -68,7 +61,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-Launcher-Build-Fixed
+          name: PBNG-Launcher-Build
           path: |
             installer/PBNG-Setup-v1.0.104.exe
             PBNG-Launcher-v1.0.104.zip
