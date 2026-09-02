@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -9,10 +8,7 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
   </PropertyGroup>
-
   <ItemGroup>
-    <!-- VERSI YANG BENER ADA DI NUGET, sesuai log -->
     <PackageReference Include="DiscordRPC" Version="1.0.0-b20190621" />
   </ItemGroup>
-
 </Project>
