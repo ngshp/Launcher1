@@ -21,15 +21,19 @@ namespace PBNG.Launcher
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // Set combo to current lang
-            foreach (ComboBoxItem item in LangCombo.Items)
+            // Set combo to current lang - FIXED
+            try
             {
-                if ((string)item.Tag == _lang.CurrentLang)
+                foreach (ComboBoxItem item in LangCombo.Items)
                 {
-                    LangCombo.SelectedItem = item;
-                    break;
+                    if ((string)item.Tag == _lang.CurrentLang)
+                    {
+                        LangCombo.SelectedItem = item;
+                        break;
+                    }
                 }
-            }
+            } catch {}
+            
             UpdateUI();
 
             try { _discord.Init(); _discord.SetPresence(_lang.T("in_launcher"), _lang.T("ready")); } catch {}
@@ -60,7 +64,7 @@ namespace PBNG.Launcher
 
         private void UpdateUI()
         {
-            if (TitleText == null) return; // Not loaded yet
+            if (TitleText == null) return;
             
             TitleText.Text = _lang.T("app_title");
             SubtitleText.Text = _lang.T("app_subtitle");
@@ -72,7 +76,6 @@ namespace PBNG.Launcher
             VersionText.Text = $"{_lang.T("version")} 1.0.104";
             VerifiedText.Text = _lang.T("verified");
             
-            // Update Discord presence with new language
             try { _discord.SetPresence(_lang.T("in_launcher"), _lang.T("ready")); } catch {}
         }
     }
