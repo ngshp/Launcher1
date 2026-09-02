@@ -1,60 +1,93 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PBNG.Launcher.Services
 {
-    public class UpdateService
+    public class UpdaterService
     {
-        private const string Repo = "ngshp/Launcher1";
-        private static readonly HttpClient http = new HttpClient();
+        private readonly HttpClient _http = new HttpClient();
+        private const string RepoOwner = "ngshp";
+        private const string RepoName = "Launcher1";
 
-        static UpdateService()
+        public UpdaterService()
         {
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("PBNG-Launcher/1.0");
-            http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.v3+json");
+            _http.DefaultRequestHeaders.Add("User-Agent", "PBNG-Launcher-Updater");
         }
 
-        public record GitHubAsset(string name, string browser_download_url);
-        public record GitHubRelease(string tag_name, GitHubAsset[] assets);
-
-        public async Task<(bool hasUpdate, string latestVersion, string downloadUrl)> CheckAsync()
+        public async Task<(bool hasUpdate, string latestVer, string downloadUrl)> CheckAsync()
         {
             try
             {
-                var release = await http.GetFromJsonAsync<GitHubRelease>($"https://api.github.com/repos/{Repo}/releases/latest");
-                if (release == null) return (false, "", "");
+                var url = $"https://api.github.com/repos/{RepoOwner}/{RepoName}/releases/latest";
+                var json = await _http.GetStringAsync(url);
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
 
-                var latest = release.tag_name.TrimStart('v');
-                var current = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.36";
-                // Normalize: compare as Version
-                if (Version.TryParse(latest, out var vLatest) && Version.TryParse(current, out var vCurrent))
+                var latestTag = root.GetProperty("tag_name").GetString() ?? "v0.0.0";
+                var latestVer = latestTag.TrimStart('v');
+
+                // Versi current dari assembly
+                var currentVer = typeof(UpdaterService).Assembly.GetName().Version?.ToString() ?? "0.0.0";
+                
+                // Cari asset .exe installer
+                string downloadUrl = "";
+                if (root.TryGetProperty("assets", out var assets))
                 {
-                    if (vLatest <= vCurrent) return (false, latest, "");
+                    foreach (var asset in assets.EnumerateArray())
+                    {
+                        var name = asset.GetProperty("name").GetString() ?? "";
+                        if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            downloadUrl = asset.GetProperty("browser_download_url").GetString() ?? "";
+                            break;
+                        }
+                    }
                 }
-                else if (latest == current) return (false, latest, "");
 
-                var asset = release.assets.FirstOrDefault(a => a.name.StartsWith("PBNG-Setup") && a.name.EndsWith(".exe"));
-                return (true, latest, asset?.browser_download_url ?? "");
+                // Bandingkan versi simple
+                var hasUpdate = !currentVer.StartsWith(latestVer) && latestVer != "0.0.0" && !string.IsNullOrEmpty(downloadUrl);
+                
+                // Untuk dev, selalu anggap ada update jika ada downloadUrl biar bisa test
+                if (!string.IsNullOrEmpty(downloadUrl) && latestVer != currentVer)
+                    hasUpdate = true;
+
+                return (hasUpdate, latestVer, downloadUrl);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Update check failed: {ex.Message}");
                 return (false, "", "");
             }
         }
 
-        public async Task DownloadAndInstallAsync(string url)
+        public async Task DownloadAndInstallAsync(string downloadUrl)
         {
-            var temp = Path.Combine(Path.GetTempPath(), $"PBNG-Setup-{Guid.NewGuid():N}.exe");
-            var data = await http.GetByteArrayAsync(url);
-            await File.WriteAllBytesAsync(temp, data);
-            Process.Start(new ProcessStartInfo { FileName = temp, Arguments = "/SILENT /CLOSEAPPLICATIONS", UseShellExecute = true });
-            Environment.Exit(0);
+            try
+            {
+                if (string.IsNullOrEmpty(downloadUrl)) return;
+
+                var tempPath = Path.Combine(Path.GetTempPath(), "PBNG-Launcher-Setup.exe");
+                var data = await _http.GetByteArrayAsync(downloadUrl);
+                await File.WriteAllBytesAsync(tempPath, data);
+
+                // Jalankan installer dan tutup launcher
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = tempPath,
+                    UseShellExecute = true
+                });
+
+                System.Windows.Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Download failed: {ex.Message}");
+                System.Windows.MessageBox.Show($"Gagal download update: {ex.Message}", "Update Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
     }
 }
