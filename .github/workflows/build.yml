@@ -12,22 +12,25 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: actions/setup-dotnet@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.x
+        dotnet-version: 8.0.x
 
     - name: Publish Launcher
       run: |
-        dotnet publish PBNG-Ecosystem/Launcher -c Release -r win-x64 --self-contained true -o Build
+        dotnet publish PBNG-Ecosystem/Launcher/Launcher.csproj -c Release -r win-x64 --self-contained true -o Build
 
     - name: Install Inno Setup
       run: choco install innosetup -y
 
     - name: Build Installer
       run: |
-        ISCC.exe PBNG-Ecosystem\Installer\installer.iss
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" Installer\installer.iss
+      # kalau installer.iss kamu di dalam Installer/, kalau langsung di Installer/installer.iss
 
-    - uses: actions/upload-artifact@v4
+    - name: Upload Installer
+      uses: actions/upload-artifact@v4
       with:
         name: Installer
-        path: PBNG-Ecosystem/Installer/Output/
+        path: Installer/Output/
