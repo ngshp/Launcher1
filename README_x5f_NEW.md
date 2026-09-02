@@ -8,7 +8,7 @@
 
 **Launcher resmi untuk PBNG Ecosystem - Auto Update & Installer**
 
-> Uwak uwak makan Bekonang, wow kok bisa ijo 💚 — Build #103 & #104 streak SUCCESS!
+> Uwak uwak makan Bengkoang, wow kok bisa ijo 💚 — Build #103 & #104 streak SUCCESS!
 
 ### 🌐 Website
 **👉 https://ngshp.github.io/Launcher1/**
