@@ -10,12 +10,13 @@ using System.Windows;
 
 namespace PBNG.Launcher.Services
 {
-    public class UpdateService
+    // FIX: Nama class harus UpdaterService (sesuai App.xaml.cs line 9) bukan UpdateService
+    public class UpdaterService
     {
         private const string Repo = "ngshp/Launcher1";
         private static readonly HttpClient http = new HttpClient();
 
-        static UpdateService()
+        static UpdaterService()
         {
             http.DefaultRequestHeaders.UserAgent.ParseAdd("PBNG-Launcher/1.0.104");
             http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.v3+json");
@@ -35,14 +36,12 @@ namespace PBNG.Launcher.Services
                 var latest = release.tag_name.TrimStart('v');
                 var current = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.104";
 
-                // Compare versions
                 if (Version.TryParse(latest, out var vLatest) && Version.TryParse(current, out var vCurrent))
                 {
                     if (vLatest <= vCurrent) return (false, latest, "", 0);
                 }
                 else if (latest == current) return (false, latest, "", 0);
 
-                // Prefer installer
                 var asset = release.assets.FirstOrDefault(a => a.name.Contains("Setup") && a.name.EndsWith(".exe"))
                          ?? release.assets.FirstOrDefault(a => a.name.EndsWith(".exe"))
                          ?? release.assets.FirstOrDefault(a => a.name.EndsWith(".zip"));
@@ -86,7 +85,6 @@ namespace PBNG.Launcher.Services
                     }
                 }
 
-                // Launch installer silent + close apps
                 Process.Start(new ProcessStartInfo 
                 { 
                     FileName = temp, 
@@ -95,7 +93,6 @@ namespace PBNG.Launcher.Services
                     Verb = "runas"
                 });
                 
-                // Exit current launcher
                 Application.Current?.Shutdown();
                 Environment.Exit(0);
             }
@@ -111,4 +108,7 @@ namespace PBNG.Launcher.Services
             Process.Start(new ProcessStartInfo { FileName = "https://github.com/ngshp/Launcher1/releases", UseShellExecute = true });
         }
     }
+
+    // Alias biar kompatibel dengan kode lama yang manggil UpdateService
+    public class UpdateService : UpdaterService { }
 }
