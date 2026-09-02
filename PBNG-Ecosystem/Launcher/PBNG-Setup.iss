@@ -1,5 +1,5 @@
-; PBNG Launcher - Installer PRO MAX v1.0.104
-; Build #105 FIXED - No duplicate OutputDir
+; PBNG Launcher - Installer PRO MAX v1.0.104 FIXED FINAL
+; FIX: Remove Indonesian.isl (not exist on GitHub runner)
 
 #define MyAppName "PBNG Launcher"
 #define MyAppVersion "1.0.104"
@@ -8,7 +8,7 @@
 #define MyAppExeName "Launcher.exe"
 
 [Setup]
-AppId={{PBNG-LAUNCHER-105}}
+AppId={{PBNG-LAUNCHER-105-FINAL}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
@@ -18,7 +18,6 @@ AppUpdatesURL=https://github.com/ngshp/Launcher1/releases
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=
 OutputDir=installer
 OutputBaseFilename=PBNG-Setup-v1.0.104
 SetupIconFile=..\..\pbng_icon.ico
@@ -27,13 +26,11 @@ SolidCompression=yes
 WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64
 PrivilegesRequired=lowest
-PrivilegesRequiredOverridesAllowed=dialog
 UninstallDisplayIcon={app}\{#MyAppExeName}
 UninstallDisplayName={#MyAppName} v{#MyAppVersion}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "indonesian"; MessagesFile: "compiler:Languages\Indonesian.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
