@@ -1,4 +1,3 @@
-
 using System;
 using DiscordRPC;
 
@@ -6,29 +5,42 @@ namespace PBNG.Launcher.Services
 {
     public class DiscordService : IDisposable
     {
-        private DiscordRpcClient client;
+        private DiscordRpcClient? _client;
 
-        public void Init(string clientId = "1234567890123456789") // Ganti dengan Discord Application ID Toko
+        public void Init()
         {
-            client = new DiscordRpcClient(clientId);
-            client.OnReady += (s, e) => Console.WriteLine("Discord RPC Ready");
-            client.Initialize();
-            SetPresence("In Launcher", "Browsing Ecosystem");
-        }
-
-        public void SetPresence(string details, string state, string largeImage = "pbng_icon")
-        {
-            if (client == null) return;
-            client.SetPresence(new RichPresence()
+            try
             {
-                Details = details,
-                State = state,
-                Timestamps = new Timestamps() { Start = DateTime.UtcNow },
-                Assets = new Assets() { LargeImageKey = largeImage, LargeImageText = "PBNG Launcher v1.0.36" },
-                Buttons = new Button[] { new Button() { Label = "Download Launcher", Url = "https://github.com/ngshp/Launcher1/releases/latest" } }
-            });
+                _client = new DiscordRpcClient("1370000000000000000"); // Ganti Client ID asli Toko
+                _client.Initialize();
+                SetPresence("Di PBNG Launcher", "v1.0.37");
+            }
+            catch { }
         }
 
-        public void Dispose() => client?.Dispose();
+        public void SetPresence(string details, string state)
+        {
+            if (_client == null) return;
+            try
+            {
+                _client.SetPresence(new RichPresence()
+                {
+                    Details = details,
+                    State = state,
+                    Timestamps = Timestamps.Now,
+                    Assets = new Assets()
+                    {
+                        LargeImageKey = "pbng_icon",
+                        LargeImageText = "PBNG Launcher"
+                    }
+                });
+            }
+            catch { }
+        }
+
+        public void Dispose()
+        {
+            try { _client?.Dispose(); } catch { }
+        }
     }
 }
