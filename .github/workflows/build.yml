@@ -27,10 +27,15 @@ jobs:
     - name: Build Installer
       run: |
         & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" Installer\installer.iss
-      # kalau installer.iss kamu di dalam Installer/, kalau langsung di Installer/installer.iss
 
     - name: Upload Installer
       uses: actions/upload-artifact@v4
       with:
         name: Installer
         path: Installer/Output/
+
+    - name: Upload Raw Launcher.exe
+      uses: actions/upload-artifact@v4
+      with:
+        name: Launcher-exe
+        path: Build/
