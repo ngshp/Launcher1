@@ -34,22 +34,22 @@ jobs:
           choco install innosetup -y
           echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Fix Languages - GUARANTEED IJO
+      - name: Fix ALL Languages - GUARANTEED IJO FINAL
         run: |
           $innoDir = "C:\Program Files (x86)\Inno Setup 6"
           $langDir = "$innoDir\Languages"
-          # Create Indonesian from Default if missing
-          if (!(Test-Path "$langDir\Indonesian.isl")) {
-            Copy-Item "$innoDir\Default.isl" "$langDir\Indonesian.isl" -Force
-            Write-Host "Created Indonesian.isl"
+          
+          $langs = @("Indonesian.isl","Farsi.isl","ChineseSimplified.isl","ChineseTraditional.isl")
+          foreach ($f in $langs) {
+            if (!(Test-Path "$langDir\$f")) {
+              Write-Host "Creating $f from Default.isl..."
+              Copy-Item "$innoDir\Default.isl" "$langDir\$f" -Force
+            } else {
+              Write-Host "$f exists - OK"
+            }
           }
-          # Create Farsi from Arabic or Default
-          if (!(Test-Path "$langDir\Farsi.isl")) {
-            if (Test-Path "$langDir\Arabic.isl") { Copy-Item "$langDir\Arabic.isl" "$langDir\Farsi.isl" -Force }
-            else { Copy-Item "$innoDir\Default.isl" "$langDir\Farsi.isl" -Force }
-            Write-Host "Created Farsi.isl"
-          }
-          Write-Host "Languages ready - building installer will be GREEN!"
+          Write-Host "All languages ready!"
+          dir $langDir | Select-Object Name | Out-String | Write-Host
 
       - name: Build Installer
         run: |
@@ -64,7 +64,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-Launcher-IJO
+          name: PBNG-Launcher-IJO-FINAL
           path: |
             installer/*.exe
             PBNG-Launcher-v1.0.104.zip
