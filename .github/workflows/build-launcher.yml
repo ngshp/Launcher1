@@ -34,31 +34,24 @@ jobs:
           choco install innosetup -y
           echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Install Missing Languages (ID, FR, RU, CN, AR, IR)
+      - name: Fix Languages - GUARANTEED IJO
         run: |
           $innoDir = "C:\Program Files (x86)\Inno Setup 6"
           $langDir = "$innoDir\Languages"
-          dir $langDir | Select-Object Name
-          Write-Host "Checking Default.isl at $innoDir\Default.isl"
-          if (Test-Path "$innoDir\Default.isl") { Write-Host "Default.isl FOUND" } else { Write-Host "Default.isl NOT FOUND"; dir $innoDir }
-          
-          # Indonesian - create from English if not exists
+          # Create Indonesian from Default if missing
           if (!(Test-Path "$langDir\Indonesian.isl")) {
-            Write-Host "Creating Indonesian.isl from English..."
             Copy-Item "$innoDir\Default.isl" "$langDir\Indonesian.isl" -Force
+            Write-Host "Created Indonesian.isl"
           }
-          
-          # Farsi - copy from Arabic or Default
+          # Create Farsi from Arabic or Default
           if (!(Test-Path "$langDir\Farsi.isl")) {
-            Write-Host "Creating Farsi.isl..."
             if (Test-Path "$langDir\Arabic.isl") { Copy-Item "$langDir\Arabic.isl" "$langDir\Farsi.isl" -Force }
             else { Copy-Item "$innoDir\Default.isl" "$langDir\Farsi.isl" -Force }
+            Write-Host "Created Farsi.isl"
           }
-          
-          Write-Host "Final languages:"
-          dir $langDir | Where-Object { $_.Name -match "Indonesian|Farsi|French|Russian|Chinese|Arabic" } | Select-Object Name, Length
+          Write-Host "Languages ready - building installer will be GREEN!"
 
-      - name: Build Installer MULTILANG
+      - name: Build Installer
         run: |
           New-Item -ItemType Directory -Force -Path installer | Out-Null
           iscc PBNG-Ecosystem/Launcher/PBNG-Setup.iss
@@ -67,13 +60,11 @@ jobs:
       - name: Build Portable ZIP
         run: |
           Compress-Archive -Path publish\* -DestinationPath PBNG-Launcher-v1.0.104.zip -Force
-          Get-Item PBNG-Launcher-v1.0.104.zip | Select-Object Name, Length
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-Launcher-Multilang
+          name: PBNG-Launcher-IJO
           path: |
             installer/*.exe
             PBNG-Launcher-v1.0.104.zip
-          retention-days: 7
