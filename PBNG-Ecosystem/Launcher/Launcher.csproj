@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-<PropertyGroup>
+  <PropertyGroup>
 
-<OutputType>WinExe</OutputType>
+    <OutputType>WinExe</OutputType>
 
-<TargetFramework>net8.-windows</TargetFramework>
+    <TargetFramework>net8.-windows</TargetFramework>
 
-<UseWPF>true</UseWPF>
+    <UseWPF>true</UseWPF>
 
-<Nullable>enable</Nullable>
+    <Nullable>enable</Nullable>
 
-</PropertyGroup>
+  </PropertyGroup>
 
 </Project>
