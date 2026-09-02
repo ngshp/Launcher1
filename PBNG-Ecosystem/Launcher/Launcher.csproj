@@ -8,11 +8,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
+    <!-- FIX DUPLICATE -->
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
   </PropertyGroup>
 
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
+    <Page Include="**\*.xaml" Exclude="App.xaml;MainWindow.xaml" />
   </ItemGroup>
 
 </Project>
