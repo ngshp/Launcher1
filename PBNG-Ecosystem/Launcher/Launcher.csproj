@@ -3,20 +3,23 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>false</UseWindowsForms>
+    <AssemblyVersion>1.0.104.0</AssemblyVersion>
+    <FileVersion>1.0.104.0</FileVersion>
+    <Version>1.0.104</Version>
+    <ApplicationIcon>..\..\pbng_icon.ico</ApplicationIcon>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- FIX #103: Package yang bener DiscordRichPresence (Lachee) -->
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="pbng_icon.ico">
+    <None Update="pbng_icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
