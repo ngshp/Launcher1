@@ -1,22 +1,20 @@
+using System;
 using System.Windows;
 using PBNG.Launcher.Services;
 
 namespace PBNG.Launcher
 {
-    public partial class MainWindow : Window
+    // Ini file lama Toko, Toko rename jadi MainForm biar gak bentrok sama MainWindow.xaml.cs
+    public partial class MainForm : Window
     {
-        public MainWindow()
+        public MainForm()
         {
             InitializeComponent();
-            Loaded += MainWindow_Loaded;
         }
 
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void MainForm_Loaded(object sender, RoutedEventArgs e)
         {
-            // Discord presence update
             App.Discord?.SetPresence("In PBNG Launcher", "Browsing Games");
-
-            // Check update dari GitHub
             try
             {
                 var (hasUpdate, latestVer, downloadUrl) = await App.Updater.CheckAsync();
@@ -27,7 +25,6 @@ namespace PBNG.Launcher
                         "PBNG Launcher - Update Available",
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Information);
-
                     if (result == MessageBoxResult.Yes)
                     {
                         App.Discord?.SetPresence($"Updating to v{latestVer}", "Downloading...");
@@ -37,7 +34,6 @@ namespace PBNG.Launcher
             }
             catch (Exception ex)
             {
-                // Biarin aja kalo offline
                 Console.WriteLine("Update check failed: " + ex.Message);
             }
         }
