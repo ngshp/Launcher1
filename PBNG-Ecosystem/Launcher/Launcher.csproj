@@ -10,4 +10,14 @@
     <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DiscordRPC" Version="1.0.175.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="pbng_icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
