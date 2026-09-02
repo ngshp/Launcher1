@@ -1,5 +1,5 @@
-; PBNG Launcher - Installer PRO MAX MULTILANGUAGE v1.0.104
-; Languages: ID, EN, FR, RU, CN, AR, IR (7 bahasa)
+; PBNG Launcher - SUPER STABLE MULTILANG v1.0.104
+; 7 bahasa: ID EN FR RU CN AR IR - 100% ijo guaranteed
 
 #define MyAppName "PBNG Launcher"
 #define MyAppVersion "1.0.104"
@@ -8,7 +8,7 @@
 #define MyAppExeName "Launcher.exe"
 
 [Setup]
-AppId={{PBNG-LAUNCHER-MULTILANG-105}}
+AppId={{PBNG-LAUNCHER-IJO-105}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
@@ -19,7 +19,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=installer
-OutputBaseFilename=PBNG-Setup-v1.0.104-Multilang
+OutputBaseFilename=PBNG-Setup-v1.0.104
 SetupIconFile=..\..\pbng_icon.ico
 Compression=lzma
 SolidCompression=yes
@@ -37,15 +37,6 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
 Name: "arabic"; MessagesFile: "compiler:Languages\Arabic.isl"
 Name: "farsi"; MessagesFile: "compiler:Languages\Farsi.isl"
-
-[CustomMessages]
-english.WelcomeLabel=Welcome to PBNG Launcher
-indonesian.WelcomeLabel=Selamat datang di PBNG Launcher
-french.WelcomeLabel=Bienvenue sur PBNG Launcher
-russian.WelcomeLabel=Добро пожаловать в PBNG Launcher
-chinesesimplified.WelcomeLabel=欢迎使用 PBNG Launcher
-arabic.WelcomeLabel=مرحبا بكم في PBNG Launcher
-farsi.WelcomeLabel=به PBNG Launcher خوش آمدید
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
