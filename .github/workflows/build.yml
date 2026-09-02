@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -28,14 +31,26 @@ jobs:
       run: |
         & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" Installer\installer.iss
 
-    - name: Upload Installer
+    - name: Upload Installer Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Installer
         path: Installer/Output/
 
-    - name: Upload Raw Launcher.exe
+    - name: Upload Raw Launcher Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Launcher-exe
         path: Build/
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: PBNG Launcher v1.0.${{ github.run_number }}
+        generate_release_notes: true
+        files: |
+          Installer/Output/*.exe
+          Build/Launcher.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
