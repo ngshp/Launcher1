@@ -1,14 +1,18 @@
-using System;
 using System.Windows;
-using PBNG.Launcher.Services;
 
 namespace PBNG.Launcher
 {
+    // FIXED: Gak manggil InitializeComponent karena gak ada MainForm.xaml
+    // File ini TETAP ADA sesuai permintaan Toko!
     public partial class MainForm : Window
     {
         public MainForm()
         {
-            InitializeComponent();
+            // Jangan panggil InitializeComponent - bikin Window kosong aja
+            this.Title = "PBNG MainForm (Legacy)";
+            this.Width = 400;
+            this.Height = 300;
+            this.Loaded += MainForm_Loaded;
         }
 
         private async void MainForm_Loaded(object sender, RoutedEventArgs e)
@@ -16,18 +20,21 @@ namespace PBNG.Launcher
             App.Discord?.SetPresence("In PBNG Launcher", "Browsing Games");
             try
             {
-                var (hasUpdate, latestVer, downloadUrl) = await App.Updater.CheckAsync();
-                if (hasUpdate)
+                if (App.Updater != null)
                 {
-                    var result = MessageBox.Show(
-                        $"Update v{latestVer} tersedia!\nMau update sekarang?",
-                        "PBNG Launcher - Update Available",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Information);
-                    if (result == MessageBoxResult.Yes)
+                    var (hasUpdate, latestVer, downloadUrl) = await App.Updater.CheckAsync();
+                    if (hasUpdate)
                     {
-                        App.Discord?.SetPresence($"Updating to v{latestVer}", "Downloading...");
-                        await App.Updater.DownloadAndInstallAsync(downloadUrl);
+                        var result = System.Windows.MessageBox.Show(
+                            $"Update v{latestVer} tersedia!\nMau update sekarang?",
+                            "PBNG Launcher - Update Available",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Information);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            App.Discord?.SetPresence($"Updating to v{latestVer}", "Downloading...");
+                            await App.Updater.DownloadAndInstallAsync(downloadUrl);
+                        }
                     }
                 }
             }
