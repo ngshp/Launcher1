@@ -4,7 +4,6 @@ using PBNG.Launcher.Services;
 
 namespace PBNG.Launcher
 {
-    // Ini file lama Toko, Toko rename jadi MainForm biar gak bentrok sama MainWindow.xaml.cs
     public partial class MainForm : Window
     {
         public MainForm()
