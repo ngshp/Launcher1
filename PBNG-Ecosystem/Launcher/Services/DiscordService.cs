@@ -9,19 +9,18 @@ namespace PBNG.Launcher.Services
         private bool _inited;
         private const string ClientId = "1418576866623442955";
 
-        public void Init()
+        public void Init(string clientId = ClientId)
         {
             if (_inited) return;
             try
             {
-                _client = new DiscordRpcClient(ClientId);
+                _client = new DiscordRpcClient(clientId);
                 _client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
                 _client.OnReady += (s, e) => 
                 {
                     Console.WriteLine($"[Discord] Ready: {e.User.Username}");
                     SetPresence("Di PBNG Launcher", "Siap Main Point Blank", "pbng_icon");
                 };
-                _client.OnConnectionFailed += (s, e) => Console.WriteLine($"[Discord] Connection Failed");
                 _client.Initialize();
                 _inited = true;
             }
@@ -48,10 +47,10 @@ namespace PBNG.Launcher.Services
                         SmallImageKey = smallImageKey,
                         SmallImageText = "Verified • Build #105"
                     },
-                    Buttons = new Button[]
+                    Buttons = new DiscordRPC.Button[]
                     {
-                        new Button() { Label = "Download Launcher", Url = "https://github.com/ngshp/Launcher1/releases" },
-                        new Button() { Label = "Website", Url = "https://ngshp.github.io/Launcher1/" }
+                        new DiscordRPC.Button() { Label = "Download Launcher", Url = "https://github.com/ngshp/Launcher1/releases" },
+                        new DiscordRPC.Button() { Label = "Website", Url = "https://ngshp.github.io/Launcher1/" }
                     }
                 });
             }
