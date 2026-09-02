@@ -19,14 +19,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Clean old workflows
-        run: |
-          if (Test-Path ".github/workflows/build.yml") { Remove-Item ".github/workflows/build.yml" -Force }
-          dir .github/workflows
-
-      - name: Find csproj
-        run: Get-ChildItem -Recurse -Filter *.csproj | ForEach-Object { $_.FullName }
-
       - name: Restore & Build
         run: |
           dotnet restore PBNG-Ecosystem/Launcher/Launcher.csproj
@@ -42,16 +34,43 @@ jobs:
           choco install innosetup -y
           echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Build Installer
+      - name: Install Missing Languages (ID, FR, RU, CN, AR, IR)
+        run: |
+          $langDir = "C:\Program Files (x86)\Inno Setup 6\Languages"
+          dir $langDir
+          
+          # Download Indonesian (unofficial) if missing
+          if (!(Test-Path "$langDir\Indonesian.isl")) {
+            Write-Host "Downloading Indonesian.isl..."
+            try {
+              Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/Unofficial/Indonesian.isl" -OutFile "$langDir\Indonesian.isl" -ErrorAction Stop
+            } catch {
+              Write-Host "Official Indonesian not found, creating fallback from English..."
+              Copy-Item "$langDir\Default.isl" "$langDir\Indonesian.isl"
+              # Replace English strings with Indonesian fallback
+              (Get-Content "$langDir\Indonesian.isl") -replace 'English','Indonesian' | Set-Content "$langDir\Indonesian.isl"
+            }
+          }
+          
+          # Download Farsi if missing
+          if (!(Test-Path "$langDir\Farsi.isl")) {
+            Write-Host "Farsi.isl missing, trying Persian..."
+            if (Test-Path "$langDir\Persian.isl") { Copy-Item "$langDir\Persian.isl" "$langDir\Farsi.isl" }
+            else { Copy-Item "$langDir\Default.isl" "$langDir\Farsi.isl" }
+          }
+          
+          # Check all required langs
+          $required = @("French.isl","Russian.isl","ChineseSimplified.isl","Arabic.isl","Indonesian.isl","Farsi.isl")
+          foreach ($f in $required) {
+            if (Test-Path "$langDir\$f") { Write-Host "OK $f exists" } else { Write-Host "WARN $f still missing, will use Default" }
+          }
+          dir $langDir | Select-Object Name
+
+      - name: Build Installer MULTILANG
         run: |
           New-Item -ItemType Directory -Force -Path installer | Out-Null
-          if (Test-Path "PBNG-Ecosystem/Launcher/PBNG-Setup.iss") {
-            iscc PBNG-Ecosystem/Launcher/PBNG-Setup.iss
-            dir installer
-          } else {
-            Write-Host "ISS not found - using exe as installer"
-            Copy-Item "publish/Launcher.exe" "installer/PBNG-Setup-v1.0.104.exe" -Force
-          }
+          iscc PBNG-Ecosystem/Launcher/PBNG-Setup.iss
+          dir installer
 
       - name: Build Portable ZIP
         run: |
@@ -61,8 +80,8 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-Launcher-Build
+          name: PBNG-Launcher-Multilang
           path: |
-            installer/PBNG-Setup-v1.0.104.exe
+            installer/*.exe
             PBNG-Launcher-v1.0.104.zip
           retention-days: 7
