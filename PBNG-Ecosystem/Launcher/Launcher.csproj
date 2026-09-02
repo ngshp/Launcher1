@@ -10,4 +10,8 @@
     <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DiscordRPC" Version="1.0.175" />
+  </ItemGroup>
+
 </Project>
