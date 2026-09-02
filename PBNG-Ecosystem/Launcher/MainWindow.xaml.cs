@@ -21,11 +21,10 @@ namespace PBNG.Launcher
 
             try
             {
-                // FIX: Tuple now has 4 elements (hasUpdate, ver, url, size) not 3
                 var (hasUpdate, ver, url, size) = await _updater.CheckAsync();
                 if (hasUpdate)
                 {
-                    var res = MessageBox.Show($"Update v{ver} tersedia! ({size / 1024 / 1024} MB)\nUpdate sekarang?", "PBNG Launcher", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    var res = System.Windows.MessageBox.Show($"Update v{ver} tersedia! ({size / 1024 / 1024} MB)\nUpdate sekarang?", "PBNG Launcher", MessageBoxButton.YesNo, MessageBoxImage.Information);
                     if (res == MessageBoxResult.Yes)
                     {
                         _discord.SetPresence($"Updating to v{ver}", "Downloading...");
