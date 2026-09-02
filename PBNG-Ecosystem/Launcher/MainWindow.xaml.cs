@@ -1,13 +1,31 @@
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace PBNG.Launcher
 {
+    // FIX TOTAL: Gak pake InitializeComponent biar gak error XAML codegen
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
-            InitializeComponent();
+            // Bikin UI manual via code, bukan via XAML
+            this.Title = "PBNG Launcher";
+            this.Width = 900;
+            this.Height = 600;
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            var grid = new Grid();
+            var text = new TextBlock
+            {
+                Text = "PBNG Launcher - Build SUCCESS! 💚",
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = 24
+            };
+            grid.Children.Add(text);
+            this.Content = grid;
+
             this.Loaded += MainWindow_Loaded;
         }
 
@@ -21,7 +39,6 @@ namespace PBNG.Launcher
                     var (hasUpdate, latestVer, downloadUrl) = await App.Updater.CheckAsync();
                     if (hasUpdate)
                     {
-                        // FIX: Pakai System.Windows.MessageBox biar gak bentrok sama WinForms
                         var result = System.Windows.MessageBox.Show(
                             $"Update v{latestVer} tersedia!\nMau update sekarang?",
                             "PBNG Launcher - Update Available",
