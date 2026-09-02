@@ -1,3 +1,5 @@
+![PBNG Launcher Banner](docs/banner.png)
+
 # 🚀 PBNG Launcher
 
 Launcher resmi untuk PBNG Ecosystem - Auto Update & Installer
@@ -15,10 +17,8 @@ Launcher resmi untuk PBNG Ecosystem - Auto Update & Installer
 - Self-contained (.NET 8, tidak perlu install .NET)
 - Auto-updater
 - Installer modern (Inno Setup)
+- Icon custom PBNG
 
-   ![PBNG](https://...link gambar...)     ![PBNG Launcher Banner](docs/banner.png)
-    # 🚀 PBNG Launcher
-  
 ### 🛠️ Cara Build Lokal
 ```bash
 dotnet publish PBNG-Ecosystem/Launcher/Launcher.csproj -c Release -r win-x64 --self-contained true -o Build
