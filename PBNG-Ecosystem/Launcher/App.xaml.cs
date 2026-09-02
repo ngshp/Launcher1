@@ -1,20 +1,22 @@
 using System.Windows;
-using PBNG.Launcher.Services;
 
 namespace PBNG.Launcher
 {
-    // FIX: Pakai System.Windows.Application biar gak bentrok sama WinForms
-    public partial class App : System.Windows.Application
+    public partial class App : Application
     {
-        public static DiscordService? Discord { get; private set; }
-        public static UpdateService? Updater { get; private set; }
+        public static Services.DiscordService? Discord { get; private set; }
+        public static Services.UpdaterService? Updater { get; private set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            Discord = new DiscordService();
+            Discord = new Services.DiscordService();
             Discord.Init();
-            Updater = new UpdateService();
+            Updater = new Services.UpdaterService();
+
+            // Buka MainWindow manual, gak pake StartupUri biar gak butuh InitializeComponent
+            var main = new MainWindow();
+            main.Show();
         }
 
         protected override void OnExit(ExitEventArgs e)
