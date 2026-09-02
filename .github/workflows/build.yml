@@ -18,16 +18,16 @@ jobs:
 
     - name: Publish Launcher
       run: |
-        dotnet publish Launcher -c Release -r win-x64 --self-contained true -o Build
+        dotnet publish PBNG-Ecosystem/Launcher -c Release -r win-x64 --self-contained true -o Build
 
     - name: Install Inno Setup
       run: choco install innosetup -y
 
     - name: Build Installer
       run: |
-        ISCC.exe Installer\installer.iss
+        ISCC.exe PBNG-Ecosystem\Installer\installer.iss
 
     - uses: actions/upload-artifact@v4
       with:
         name: Installer
-        path: Installer/Output/
+        path: PBNG-Ecosystem/Installer/Output/
