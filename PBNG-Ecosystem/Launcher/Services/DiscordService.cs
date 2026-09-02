@@ -6,18 +6,16 @@ namespace PBNG.Launcher.Services
     public class DiscordService : IDisposable
     {
         private DiscordRpcClient? _client;
-
         public void Init()
         {
             try
             {
-                _client = new DiscordRpcClient("1370000000000000000"); // Ganti Client ID asli Toko
+                _client = new DiscordRpcClient("1370000000000000000");
                 _client.Initialize();
                 SetPresence("Di PBNG Launcher", "v1.0.37");
             }
             catch { }
         }
-
         public void SetPresence(string details, string state)
         {
             if (_client == null) return;
@@ -37,7 +35,6 @@ namespace PBNG.Launcher.Services
             }
             catch { }
         }
-
         public void Dispose()
         {
             try { _client?.Dispose(); } catch { }
