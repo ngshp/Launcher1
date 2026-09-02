@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DiscordRPC" Version="1.0.0-b20190621" />
+    <!-- FIX: Pakai versi stable 1.0.150 yang pasti ada di NuGet -->
+    <PackageReference Include="DiscordRPC" Version="1.0.150" />
   </ItemGroup>
 
 </Project>
