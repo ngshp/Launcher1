@@ -1,11 +1,12 @@
+using System;
 using System.Windows;
 
 namespace PBNG.Launcher
 {
-    // FIX AMBIGUOUS Application + Hapus UpdaterService yang gak ada
     public partial class App : System.Windows.Application
     {
         public static Services.DiscordService? Discord { get; private set; }
+        public static Services.UpdaterService? Updater { get; private set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -13,6 +14,7 @@ namespace PBNG.Launcher
             
             Discord = new Services.DiscordService();
             Discord.Init();
+            Updater = new Services.UpdaterService();
 
             var main = new MainWindow();
             main.Show();
