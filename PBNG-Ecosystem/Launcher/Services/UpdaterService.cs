@@ -6,11 +6,9 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace PBNG.Launcher.Services
 {
-    // FIX: Nama class harus UpdaterService (sesuai App.xaml.cs line 9) bukan UpdateService
     public class UpdaterService
     {
         private const string Repo = "ngshp/Launcher1";
@@ -74,9 +72,9 @@ namespace PBNG.Launcher.Services
                 long totalRead = 0;
                 int read;
                 
-                while ((read = await contentStream.ReadAsync(buffer)) != 0)
+                while ((read = await contentStream.ReadAsync(buffer, 0, buffer.Length)) != 0)
                 {
-                    await fileStream.WriteAsync(buffer.AsSpan(0, read));
+                    await fileStream.WriteAsync(buffer, 0, read);
                     totalRead += read;
                     if (canReport)
                     {
@@ -93,12 +91,12 @@ namespace PBNG.Launcher.Services
                     Verb = "runas"
                 });
                 
-                Application.Current?.Shutdown();
+                System.Windows.Application.Current?.Shutdown();
                 Environment.Exit(0);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Update gagal: {ex.Message}\n\nDownload manual di https://github.com/ngshp/Launcher1/releases", "PBNG Launcher - Update Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show($"Update gagal: {ex.Message}\n\nDownload manual di https://github.com/ngshp/Launcher1/releases", "PBNG Launcher - Update Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 Process.Start(new ProcessStartInfo { FileName = "https://github.com/ngshp/Launcher1/releases", UseShellExecute = true });
             }
         }
@@ -109,6 +107,5 @@ namespace PBNG.Launcher.Services
         }
     }
 
-    // Alias biar kompatibel dengan kode lama yang manggil UpdateService
     public class UpdateService : UpdaterService { }
 }
