@@ -1,59 +1,39 @@
-using System;
 using System.Windows;
-using System.Windows.Controls;
+using PBNG.Launcher.Services;
 
 namespace PBNG.Launcher
 {
     public partial class MainWindow : Window
     {
+        private DiscordService _discord = new();
+        private UpdaterService _updater = new();
+
         public MainWindow()
         {
-            this.Title = "PBNG Launcher";
-            this.Width = 900;
-            this.Height = 600;
-            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
-            var grid = new Grid();
-            var text = new TextBlock
-            {
-                Text = "PBNG Launcher - Build SUCCESS! 💚",
-                HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 24
-            };
-            grid.Children.Add(text);
-            this.Content = grid;
-
-            this.Loaded += MainWindow_Loaded;
+            InitializeComponent();
+            Loaded += MainWindow_Loaded;
+            Closing += (s, e) => _discord.Dispose();
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            App.Discord?.SetPresence("In PBNG Launcher", "Browsing Games");
+            try { _discord.Init(); } catch {}
+
             try
             {
-                if (App.Updater != null)
+                // FIX: Tuple now has 4 elements (hasUpdate, ver, url, size) not 3
+                var (hasUpdate, ver, url, size) = await _updater.CheckAsync();
+                if (hasUpdate)
                 {
-                    var (hasUpdate, latestVer, downloadUrl) = await App.Updater.CheckAsync();
-                    if (hasUpdate)
+                    var res = MessageBox.Show($"Update v{ver} tersedia! ({size / 1024 / 1024} MB)\nUpdate sekarang?", "PBNG Launcher", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    if (res == MessageBoxResult.Yes)
                     {
-                        var result = System.Windows.MessageBox.Show(
-                            $"Update v{latestVer} tersedia!\nMau update sekarang?",
-                            "PBNG Launcher - Update Available",
-                            MessageBoxButton.YesNo,
-                            MessageBoxImage.Information);
-                        if (result == MessageBoxResult.Yes)
-                        {
-                            App.Discord?.SetPresence($"Updating to v{latestVer}", "Downloading...");
-                            await App.Updater.DownloadAndInstallAsync(downloadUrl);
-                        }
+                        _discord.SetPresence($"Updating to v{ver}", "Downloading...");
+                        await _updater.DownloadAndInstallAsync(url);
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Update check failed: " + ex.Message);
-            }
+            catch {}
         }
     }
 }
