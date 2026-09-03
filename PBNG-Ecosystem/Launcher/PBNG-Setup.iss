@@ -1,4 +1,4 @@
-; PBNG Launcher v1.0.105 - 7 BAHASA FULL PRO MAX GREEN
+; PBNG Launcher v1.0.105 - 7 BAHASA FINAL GREEN FIX
 #define MyAppName "PBNG Launcher"
 #define MyAppVersion "1.0.105"
 #define MyAppPublisher "PBNG Ecosystem"
@@ -39,10 +39,7 @@ Name: "farsi"; MessagesFile: "compiler:Languages\Farsi.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
-Source: "publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
-Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
+Source: "..\..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
