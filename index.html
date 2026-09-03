@@ -24,81 +24,40 @@
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PBNG Launcher - Official Launcher v1.0.104 | SUCCESS</title>
-<meta name="description" content="Launcher resmi PBNG Ecosystem - Auto Update, Installer Modern, Discord Rich Presence ON. v1.0.104 Success 1m 32s">
-<link rel="icon" href="https://github.com/ngshp/Launcher1/raw/main/pbng_icon.ico">
+<title>PBNG Launcher v1.0.104 - MULTILANG PRO MAX</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700;900&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#070a14;color:white;font-family:'Inter',sans-serif;overflow-x:hidden}
-.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);background-size:50px 50px;z-index:-2}
-.bg-glow{position:fixed;width:900px;height:900px;background:radial-gradient(circle, rgba(0,229,255,0.18) 0%, rgba(139,92,246,0.12) 30%, transparent 70%);top:-300px;right:-200px;z-index:-1;filter:blur(40px)}
-.hero{min-height:88vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 20px;flex-direction:column}
-.badge{display:inline-flex;align-items:center;gap:10px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.4);color:#22c55e;padding:8px 16px;border-radius:100px;font-size:12px;font-weight:800;letter-spacing:1px;margin-bottom:28px;backdrop-filter:blur(10px)}
-.badge-dot{width:8px;height:8px;background:#22c55e;border-radius:50%;box-shadow:0 0 12px #22c55e;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.2)}}
-h1{font-family:'Orbitron',sans-serif;font-size:clamp(44px,9vw,104px);font-weight:900;letter-spacing:3px;line-height:0.85;background:linear-gradient(180deg, #fff 10%, #a5f3fc 55%, #06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:18px;filter:drop-shadow(0 0 30px rgba(0,229,255,0.3))}
-.tagline{color:#94a3b8;font-size:clamp(14px,2.1vw,19px);max-width:640px;margin:0 auto 36px;line-height:1.6}
-.btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:44px}
-.btn{padding:18px 36px;border-radius:14px;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:all 0.25s;font-size:16px;letter-spacing:0.3px}
-.btn-primary{background:#00e5ff;color:#000;box-shadow:0 0 35px rgba(0,229,255,0.5), inset 0 1px 0 rgba(255,255,255,0.5);border:1px solid #00e5ff}
-.btn-primary:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 0 60px rgba(0,229,255,0.8), 0 10px 30px rgba(0,229,255,0.3)}
-.btn-secondary{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:white;backdrop-filter:blur(12px)}
-.btn-secondary:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.25);transform:translateY(-2px)}
-.stats{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;color:#475569;font-size:12px;font-family:'Inter',monospace;font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
-.stats div{display:flex;gap:6px;align-items:center;background:rgba(255,255,255,0.03);padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.06)}
-.stats span{color:white;font-weight:800}
-.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;max-width:1120px;margin:0 auto;padding:20px 20px 40px}
-.card{background:linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:26px;backdrop-filter:blur(16px);transition:all 0.3s;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg, transparent, rgba(0,229,255,0.5), transparent);opacity:0;transition:opacity 0.3s}
-.card:hover{border-color:rgba(0,229,255,0.35);background:linear-gradient(135deg, rgba(0,229,255,0.08) 0%, rgba(255,255,255,0.02) 100%);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.3), 0 0 20px rgba(0,229,255,0.15)}
-.card:hover::before{opacity:1}
-.card-icon{width:44px;height:44px;border-radius:12px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px}
-.card h3{font-family:'Orbitron';font-size:13px;margin-bottom:10px;color:#e2e8f0;letter-spacing:1px}
-.card p{color:#94a3b8;font-size:13.5px;line-height:1.7}
-.install{max-width:1120px;margin:40px auto;padding:0 20px}
-.install-box{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px;backdrop-filter:blur(16px)}
-.install-box h2{font-family:'Orbitron';font-size:20px;margin-bottom:20px}
-.step{display:flex;gap:16px;margin-bottom:18px}
-.step-num{width:32px;height:32px;border-radius:50%;background:rgba(0,229,255,0.15);border:1px solid rgba(0,229,255,0.3);color:#00e5ff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
-.footer{padding:50px 20px;text-align:center;color:#475569;font-size:13px;border-top:1px solid rgba(255,255,255,0.06);margin-top:80px;background:rgba(0,0,0,0.2)}
+body{margin:0;background:#0a0f14;color:#c8f0ff;font-family:Inter,Segoe UI,Arial;overflow-x:hidden}
+.hero{position:relative;text-align:center;padding:60px 20px;background:radial-gradient(ellipse at center,#0f2a1f 0%,#060d12 70%);border-bottom:2px solid #1aff6c22}
+.badge{display:inline-block;padding:6px 14px;border:1px solid #1aff6c;border-radius:20px;color:#1aff6c;font-size:12px;margin:4px;box-shadow:0 0 10px #1aff6c66}
+h1{font-size:48px;margin:20px 0;background:linear-gradient(180deg,#fff,#6cf,#1aff6c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;letter-spacing:-1px}
+.subtitle{color:#6dd8ff;letter-spacing:3px;font-size:13px}
+.btn{display:inline-block;margin:12px;padding:16px 32px;background:linear-gradient(90deg,#1aff6c,#00d0ff);color:#001a0f;font-weight:800;border-radius:10px;text-decoration:none;box-shadow:0 0 20px #1aff6c88;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 35px #1aff6c}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;padding:40px;max-width:1100px;margin:auto}
+.card{background:#0e1a22;border:1px solid #1aff6c22;border-radius:16px;padding:22px;box-shadow:0 0 20px #000}
+.card h3{color:#1aff6c;margin-top:0}
 </style>
 </head>
 <body>
-<div class="bg-grid"></div><div class="bg-glow"></div>
-<section class="hero">
-<div class="badge"><div class="badge-dot"></div> BUILD #104 SUCCESS • 1m 32s • VERIFIED</div>
-<h1>PBNG<br>LAUNCHER</h1>
-<p class="tagline">Launcher resmi untuk <strong style="color:white">PBNG Ecosystem</strong> — Auto Update, Installer Modern, Discord Rich Presence ON. Self-contained .NET 8, tanpa install runtime.</p>
-<div class="btns">
-<a href="https://github.com/ngshp/Launcher1/releases/download/v1.0.104/PBNG-Setup.exe" class="btn btn-primary">⬇️ DOWNLOAD v1.0.104</a>
-<a href="https://github.com/ngshp/Launcher1/releases" class="btn btn-secondary">📦 All Releases</a>
-<a href="https://github.com/ngshp/Launcher1" class="btn btn-secondary">⭐ GitHub</a>
+<div class="hero">
+  <img src="https://raw.githubusercontent.com/ngshp/Launcher1/main/releases_banner.png" style="max-width:900px;width:100%;border-radius:12px;box-shadow:0 0 40px #1aff6c33" alt="PBNG Banner"/>
+  <div style="margin-top:20px">
+    <span class="badge">STABLE</span><span class="badge">BUILD #32 GREEN</span><span class="badge">7 LANGUAGES</span><span class="badge">v1.0.104</span>
+  </div>
+  <h1>PBNG LAUNCHER v1.0.104</h1>
+  <div class="subtitle">MULTILANG PRO MAX • 7 LANGUAGES • AUTO-UPDATER • DISCORD ON</div>
+  <div style="margin-top:30px">
+    <a class="btn" href="https://github.com/ngshp/Launcher1/releases/download/v1.0.104/PBNG-FULL-v1.0.104.zip">📦 DOWNLOAD FULL (117 MB)</a>
+    <a class="btn" style="background:linear-gradient(90deg,#222,#444);color:#9ef;border:1px solid #1aff6c55" href="https://github.com/ngshp/Launcher1/releases">GITHUB RELEASES</a>
+  </div>
 </div>
-<div class="stats">
-<div>📦 Installer: <span>48.7 MB</span></div>
-<div>💾 Portable: <span>69 MB</span></div>
-<div>🏷️ Version: <span>v1.0.104</span></div>
-<div>🎮 Discord: <span style="color:#22c55e">ONLINE</span></div>
-<div>✅ Status: <span style="color:#22c55e">SUCCESS</span></div>
+<div class="grid">
+  <div class="card"><h3>🇮🇩 7 Bahasa</h3>ID, EN, FR, RU, CN, AR, FA - Installer & In-Launcher switcher di kanan atas</div>
+  <div class="card"><h3>🌐 Auto-Updater PRO MAX</h3>Check GitHub API, download silent, install otomatis - selalu up-to-date</div>
+  <div class="card"><h3>🎮 Discord Rich Presence</h3>Status "Di PBNG Launcher - Siap Main Point Blank" live di Discord</div>
+  <div class="card"><h3>📦 Installer Modern</h3>Inno Setup 6, icon custom, 48.7 MB, shortcut desktop, uninstall clean</div>
+  <div class="card"><h3>⚡ Build 1m 36s GREEN</h3>GitHub Actions optimized, Build #32 SUCCESS setelah 32 attempts!</div>
+  <div class="card"><h3>🛡️ Verified Open Source</h3>Commit signed, transparent build log di ngshp/Launcher1</div>
 </div>
-</section>
-<section class="features">
-<div class="card"><div class="card-icon">⚡</div><h3>SELF-CONTAINED .NET 8</h3><p>.NET 8 bundled full, tidak perlu install runtime. Jalan langsung di Windows 10/11 64-bit. Size optimized 48.7 MB installer.</p></div>
-<div class="card"><div class="card-icon">🔄</div><h3>AUTO-UPDATER BUILT-IN</h3><p>Update otomatis tanpa download manual. Checker versi, download delta, install silent. Selalu v1.0.104 terbaru.</p></div>
-<div class="card"><div class="card-icon">📦</div><h3>INSTALLER MODERN</h3><p>Inno Setup installer pro, icon custom PBNG, shortcut desktop/start menu, uninstall clean di Control Panel.</p></div>
-<div class="card"><div class="card-icon">🎮</div><h3>DISCORD RICH PRESENCE</h3><p>Status "Playing PBNG Launcher - Siap Main Point Blank" muncul di Discord profile. Build #104 ON dengan Assets pbng_icon!</p></div>
-<div class="card"><div class="card-icon">🚀</div><h3>BUILD 1m 32s OPTIMIZED</h3><p>GitHub Actions Windows-latest, dotnet publish self-contained, upload artifact otomatis. 2x streak ijo #103 & #104!</p></div>
-<div class="card"><div class="card-icon">🛡️</div><h3>VERIFIED & OPEN SOURCE</h3><p>Commit 48df091 & f697679 signed GitHub verified signature. Open source di ngshp/Launcher1, transparent build log.</p></div>
-</section>
-<section class="install">
-<div class="install-box">
-<h2>🛠️ Cara Install</h2>
-<div class="step"><div class="step-num">1</div><div><strong style="color:white">Download Installer</strong><br><span style="color:#94a3b8;font-size:13px">Klik tombol Download v1.0.104 di atas atau via Releases > Assets > PBNG-Setup.exe</span></div></div>
-<div class="step"><div class="step-num">2</div><div><strong style="color:white">Jalankan Setup</strong><br><span style="color:#94a3b8;font-size:13px">Double-click installer, Next > Next > Install. Otomatis buat shortcut.</span></div></div>
-<div class="step"><div class="step-num">3</div><div><strong style="color:white">Main!</strong><br><span style="color:#94a3b8;font-size:13px">Buka PBNG Launcher, login, auto-update check, dan main Point Blank! Discord status akan ON.</span></div></div>
-</div>
-</section>
-<div class="footer">© 2026 PBNG Ecosystem • Built by <strong style="color:white">ngshp</strong> • Build #104 SUCCESS 1m 32s • <a href="https://github.com/ngshp/Launcher1" style="color:#00e5ff;text-decoration:none">github.com/ngshp/Launcher1</a><br><br>Uwak uwak makan Bekonang, wow kok bisa ijo 💚</div>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
