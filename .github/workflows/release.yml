@@ -1,0 +1,56 @@
+name: Release v1.0.104 Multilang
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build & Publish
+        run: |
+          dotnet restore PBNG-Ecosystem/Launcher/Launcher.csproj
+          dotnet publish PBNG-Ecosystem/Launcher/Launcher.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o publish
+
+      - name: Install Inno Setup + Fix Langs
+        run: |
+          choco install innosetup -y
+          $innoDir = "C:\Program Files (x86)\Inno Setup 6"
+          $langDir = "$innoDir\Languages"
+          @("Indonesian.isl","Farsi.isl","ChineseSimplified.isl","ChineseTraditional.isl") | ForEach-Object {
+            if (!(Test-Path "$langDir\$_")) { Copy-Item "$innoDir\Default.isl" "$langDir\$_" -Force }
+          }
+
+      - name: Build Installer
+        run: |
+          New-Item -ItemType Directory -Force -Path installer | Out-Null
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" PBNG-Ecosystem/Launcher/PBNG-Setup.iss
+
+      - name: ZIP
+        run: Compress-Archive -Path publish\* -DestinationPath PBNG-Launcher-v1.0.104.zip -Force
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            installer/*.exe
+            PBNG-Launcher-v1.0.104.zip
+          body_path: RELEASE_NOTES_v1.0.104_MULTILANG.md
+          tag_name: v1.0.104
+          name: "PBNG Launcher v1.0.104 - MULTILANG PRO MAX 🌍"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
