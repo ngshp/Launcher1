@@ -1,34 +1,63 @@
-# PBNG Launcher 🌍
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ngshp/Launcher1/main/pbng_icon.ico" width="128" />
+</p>
 
-**Launcher resmi Point Blank Next Generation Ecosystem**
-Public server Point Blank Indonesia untuk nostalgia & komunitas.
+<h1 align="center">PBNG Launcher v1.0.104 🌍 MULTILANG PRO MAX</h1>
 
-![PBNG Banner](https://github.com/ngshp/Launcher1/raw/main/pbng_banner.png)
+<p align="center">
+  <a href="https://github.com/ngshp/Launcher1/releases/latest"><img src="https://img.shields.io/github/v/release/ngshp/Launcher1?label=Latest&style=for-the-badge&color=00C853" /></a>
+  <a href="https://github.com/ngshp/Launcher1/releases"><img src="https://img.shields.io/github/downloads/ngshp/Launcher1/v1.0.104/total?color=2962FF&style=for-the-badge" /></a>
+  <img src="https://img.shields.io/badge/Build%20%2332-GREEN%20STABLE-00C853?style=for-the-badge" />
+</p>
 
-## ✨ PBNG Launcher v1.0.104 - MULTILANG PRO MAX 🌍
+<p align="center">
+  <b>Launcher resmi Point Blank Next Generation Ecosystem</b><br/>
+  Public Server PB Indonesia untuk nostalgia & komunitas
+</p>
 
-**Build #32 GREEN 1m 36s ✅ STABLE**
+<p align="center">
+  <a href="https://ngshp.github.io/Launcher1/">🌐 Website</a> •
+  <a href="https://github.com/ngshp/Launcher1/releases/latest">📦 Download Latest</a> •
+  <a href="https://discord.gg/pbng">💬 Discord</a>
+</p>
 
-### 🇮🇩 Indonesia
-✅ Installer 7 Bahasa (ID, EN, FR, RU, CN, AR, IR)
-✅ Launcher bisa ganti bahasa di kanan atas 🌐
-✅ Discord Rich Presence ON
-✅ Auto-Updater PRO MAX
-✅ Fix ChineseSimplified.isl & LangCombo
+---
 
-### 🇺🇸 English
-✅ 7-Language Installer
-✅ In-Launcher Language Switcher 🌐
-✅ Discord Rich Presence ON
-✅ Auto-Updater PRO MAX
-✅ Build #32 GREEN - SUCCESS! 💚
+### ✨ Fitur v1.0.104
+
+| Fitur | Status |
+|-------|--------|
+| **7 Bahasa Installer** ID, EN, FR, RU, CN, AR, IR | ✅ |
+| **Language Switcher** di Launcher kanan atas 🌐 | ✅ |
+| **Discord Rich Presence** - Di PBNG Launcher | ✅ |
+| **Auto-Updater PRO MAX** - Check & Install otomatis | ✅ |
+| **Fix ChineseSimplified.isl & LangCombo** | ✅ |
 
 ### 📦 Download
-**[⬇️ DOWNLOAD LATEST - v1.0.104 (118 MB) - RECOMMENDED](https://github.com/ngshp/Launcher1/releases/latest)**
 
-- `PBNG-FULL-v1.0.104.zip` (117.81 MB) - RECOMMENDED
-- `PBNG-Launcher-v1.0.104.zip` (69 MB)
+**RECOMMENDED:**
+- **PBNG-FULL-v1.0.104.zip (117.81 MB)** - Full Package + Installer
 
-Website: https://ngshp.github.io/Launcher1/
+**Alternative:**
+- PBNG-Launcher-v1.0.104.zip (69 MB) - Portable
 
-© 2026 PBNG Ecosystem 🌍🚀
+> 🔗 **Latest Release:** https://github.com/ngshp/Launcher1/releases/latest
+
+### 🚀 Cara Install
+
+1. Download `PBNG-FULL-v1.0.104.zip`
+2. Extract
+3. Jalankan `PBNG-Setup-v1.0.104.exe`
+4. Pilih Bahasa > Install
+5. Main!
+
+### 🌍 Multi Language Support
+
+🇮🇩 Indonesia • 🇺🇸 English • 🇫🇷 Français • 🇷🇺 Русский • 🇨🇳 中文 • 🇸🇦 العربية • 🇮🇷 فارسی
+
+---
+
+<p align="center">
+  © 2026 PBNG Ecosystem 🌍🚀<br/>
+  <i>Build #32 GREEN - Finally SUCCESS after 32 attempts! 💚</i>
+</p>
