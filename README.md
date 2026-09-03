@@ -23,7 +23,7 @@
 
 ---
 
-### ✨ Fitur v1.0.104
+### ✨ Fitur v1.0.105
 
 | Fitur | Status |
 |-------|--------|
@@ -36,18 +36,18 @@
 ### 📦 Download
 
 **RECOMMENDED:**
-- **PBNG-FULL-v1.0.104.zip (117.81 MB)** - Full Package + Installer
+- **PBNG-FULL-v1.0.105.zip (117.81 MB)** - Full Package + Installer
 
 **Alternative:**
-- PBNG-Launcher-v1.0.104.zip (69 MB) - Portable
+- PBNG-Launcher-v1.0.105.zip (69 MB) - Portable
 
 > 🔗 **Latest Release:** https://github.com/ngshp/Launcher1/releases/latest
 
 ### 🚀 Cara Install
 
-1. Download `PBNG-FULL-v1.0.104.zip`
+1. Download `PBNG-FULL-v1.0.105.zip`
 2. Extract
-3. Jalankan `PBNG-Setup-v1.0.104.exe`
+3. Jalankan `PBNG-Setup-v1.0.105.exe`
 4. Pilih Bahasa > Install
 5. Main!
 
