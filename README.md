@@ -1,64 +1,34 @@
-![PBNG Launcher Banner](docs/banner.png)
+# PBNG Launcher 🌍
 
-# PBNG Launcher - PACKAGE 5 IN 1 PRO MAX
-## Build #105 - ALL FEATURES
+**Launcher resmi Point Blank Next Generation Ecosystem**
+Public server Point Blank Indonesia untuk nostalgia & komunitas.
 
-### YANG AKU FIX BOS:
+![PBNG Banner](https://github.com/ngshp/Launcher1/raw/main/pbng_banner.png)
 
-### 1. RELEASE v1.0.104 ✅
-- Workflow auto-rename: PBNG-Setup-v1.0.104.exe (48.7 MB) + PBNG-Launcher-v1.0.104.zip (69 MB)
-- Auto upload ke Releases dengan changelog ijo
-- File name consistent
+## ✨ PBNG Launcher v1.0.104 - MULTILANG PRO MAX 🌍
 
-### 2. DISCORD RICH PRESENCE ✅
-- Client ID: 1418576866623442955
-- LargeImageKey: pbng_icon (upload icon di https://discord.com/developers/applications/1418576866623442955/rich-presence/assets)
-- Details: "Di PBNG Launcher"
-- State: "Siap Main Point Blank"
-- SmallImageKey: verified
+**Build #32 GREEN 1m 36s ✅ STABLE**
 
-### 3. AUTO-UPDATER ✅
-- Check https://api.github.com/repos/ngshp/Launcher1/releases/latest
-- Compare Version 1.0.104 vs latest
-- Download PBNG-Setup-xxx.exe otomatis
-- Install silent /SILENT /CLOSEAPPLICATIONS
-- Exit launcher, install baru
+### 🇮🇩 Indonesia
+✅ Installer 7 Bahasa (ID, EN, FR, RU, CN, AR, IR)
+✅ Launcher bisa ganti bahasa di kanan atas 🌐
+✅ Discord Rich Presence ON
+✅ Auto-Updater PRO MAX
+✅ Fix ChineseSimplified.isl & LangCombo
 
-### 4. INSTALLER PRO ✅
-- Inno Setup 6 script: PBNG-Setup.iss
-- Icon: pbng_icon.ico
-- AppId: PBNG-Launcher
-- Version: 1.0.104
-- 64bit only
-- Shortcut desktop + start menu
-- Uninstall clean di Control Panel
-- No SmartScreen warning (sign ready)
+### 🇺🇸 English
+✅ 7-Language Installer
+✅ In-Launcher Language Switcher 🌐
+✅ Discord Rich Presence ON
+✅ Auto-Updater PRO MAX
+✅ Build #32 GREEN - SUCCESS! 💚
 
-### 5. PORTABLE ZIP ✅
-- Publish self-contained win-x64
-- Compress ke PBNG-Launcher-v1.0.104.zip
-- Include pbng_icon.ico + README.txt
+### 📦 Download
+**[⬇️ DOWNLOAD LATEST - v1.0.104 (118 MB) - RECOMMENDED](https://github.com/ngshp/Launcher1/releases/latest)**
 
-### CARA INSTALL PACKAGE INI:
+- `PBNG-FULL-v1.0.104.zip` (117.81 MB) - RECOMMENDED
+- `PBNG-Launcher-v1.0.104.zip` (69 MB)
 
-1. Download semua file di bawah
-2. Copy ke repo lokal ngshp/Launcher1
-3. Struktur:
-```
-Launcher1/
-├── .github/workflows/build-launcher.yml  (FILE BARU - GANTI TOTAL)
-├── PBNG-Ecosystem/Launcher/
-│   ├── Services/DiscordService.cs  (REPLACE dengan DiscordService.FINAL-105.cs)
-│   ├── Services/UpdateService.cs   (REPLACE dengan UpdateService.FINAL-105.cs)
-│   └── PBNG-Setup.iss              (FILE BARU)
-├── pbng_icon.ico
-└── index.html (nanti aja)
-```
+Website: https://ngshp.github.io/Launcher1/
 
-4. git add .
-5. git commit -m "feat: 5in1 PRO MAX - release+discord+updater+installer+portable #105"
-6. git push origin main
-7. Tunggu Actions 1m 32s -> SUCCESS IJO #105
-8. Cek Releases -> 2 files muncul otomatis!
-
-Uwak uwak makan Bengkoang, wow Build #105 gas ijo!
+© 2026 PBNG Ecosystem 🌍🚀
