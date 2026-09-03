@@ -29,9 +29,24 @@ jobs:
           dotnet publish $env:PROJ_PATH -c Release -r win-x64 --self-contained true -o publish /p:PublishSingleFile=false
           Compress-Archive -Path publish/* -DestinationPath PBNG-Launcher-v1.0.104.zip -Force
 
-      - name: Setup Inno Setup
+      - name: Setup Inno Setup + Indonesian Language
+        shell: pwsh
         run: |
           choco install innosetup -y
+          $langDir = "C:\Program Files (x86)\Inno Setup 6\Languages"
+          $indoFile = "$langDir\Indonesian.isl"
+          if (-not (Test-Path $indoFile)) {
+            Write-Host "Indonesian.isl not found, downloading..."
+            try {
+              Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/Unofficial/Indonesian.isl" -OutFile $indoFile -ErrorAction Stop
+              Write-Host "Downloaded Indonesian.isl - OK"
+            } catch {
+              Write-Host "Download failed, cloning English as Indonesian..."
+              Copy-Item "$langDir\English.isl" $indoFile -Force
+            }
+          }
+          Write-Host "Languages ready:"
+          Get-ChildItem $langDir | Select-Object Name
 
       - name: Build EXE Installer
         shell: pwsh
@@ -40,12 +55,21 @@ jobs:
           if ($iss) {
             Write-Host "Building installer: $($iss.FullName)"
             & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
-            # Find output exe
-            $exe = Get-ChildItem -Recurse -Filter "*.exe" | Where-Object { $_.Name -like "*Setup*" } | Select-Object -First 1
-            if ($exe) { Copy-Item $exe.FullName -Destination "PBNG-Setup-v1.0.104.exe" }
+            # Find output exe (search more robust)
+            Start-Sleep 2
+            $exe = Get-ChildItem -Recurse -Filter "*.exe" | Where-Object { $_.Length -gt 10MB } | Sort-Object Length -Descending | Select-Object -First 1
+            if (-not $exe) { $exe = Get-ChildItem -Recurse -Filter "*Setup*.exe" | Select-Object -First 1 }
+            if ($exe) { 
+              Write-Host "Found EXE: $($exe.FullName) - $($exe.Length) bytes"
+              Copy-Item $exe.FullName -Destination "PBNG-Setup-v1.0.104.exe" -Force 
+            } else {
+              Write-Host "EXE not found in output!"
+              Get-ChildItem -Recurse -Filter "*.exe" | Format-Table FullName, Length
+            }
           } else {
             Write-Host "No .iss found, skip exe build"
           }
+          dir PBNG-*.zip, PBNG-*.exe -ErrorAction SilentlyContinue
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
