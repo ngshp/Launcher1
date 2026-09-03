@@ -1,0 +1,25 @@
+name: CLEANUP - Keep only v1.0.104 as Latest
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Delete newer tags & releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # List tags yang mau dihapus
+          for VER in v1.0.105 v1.0.106 v1.0.107 v1.0.108 v1.0.109 v1.0.110 v1.0.111 v1.0.112 v1.0.113; do
+            echo "Deleting $VER..."
+            gh release delete $VER --yes --cleanup-tag || true
+            git push origin --delete $VER || true
+          done
+          
+          # Set v1.0.104 jadi latest lagi
+          gh release edit v1.0.104 --latest --verify-tag
+          echo "DONE! v1.0.104 is Latest now!"
