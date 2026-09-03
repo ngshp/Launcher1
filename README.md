@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ngshp/Launcher1/main/banner.png" width="128" />
+  ![PBNG Launcher](https://raw.githubusercontent.com/ngshp/Launcher1/main/banner.png)
 </p>
 
 <h1 align="center">PBNG Launcher v1.0.104 🌍 MULTILANG PRO MAX</h1>
