@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/ngshp/Launcher1/main/banner.png" width="100%" alt="PBNG Launcher Banner" />
 </p>
 
-<h1 align="center">PBNG Launcher v1.0.104 🌍 MULTILANG PRO MAX</h1>
+<h1 align="center">PBNG Launcher v1.0.105 🌍 MULTILANG PRO MAX</h1>
 
 <p align="center">
   <a href="https://github.com/ngshp/Launcher1/releases/latest"><img src="https://img.shields.io/github/v/release/ngshp/Launcher1?label=LATEST&style=for-the-badge&color=00C853" alt="Latest" /></a>
