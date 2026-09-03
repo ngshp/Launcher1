@@ -1,0 +1,57 @@
+name: Build EXE + ZIP FULL
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Find Launcher csproj
+        shell: pwsh
+        run: |
+          $proj = Get-ChildItem -Recurse -Filter "*.csproj" | Where-Object { $_.Name -like "*Launcher*" } | Select-Object -First 1
+          Write-Host "Found: $($proj.FullName)"
+          echo "PROJ_PATH=$($proj.FullName)" >> $env:GITHUB_ENV
+
+      - name: Publish Launcher
+        shell: pwsh
+        run: |
+          dotnet publish $env:PROJ_PATH -c Release -r win-x64 --self-contained true -o publish /p:PublishSingleFile=false
+          Compress-Archive -Path publish/* -DestinationPath PBNG-Launcher-v1.0.104.zip -Force
+
+      - name: Setup Inno Setup
+        run: |
+          choco install innosetup -y
+
+      - name: Build EXE Installer
+        shell: pwsh
+        run: |
+          $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
+          if ($iss) {
+            Write-Host "Building installer: $($iss.FullName)"
+            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
+            # Find output exe
+            $exe = Get-ChildItem -Recurse -Filter "*.exe" | Where-Object { $_.Name -like "*Setup*" } | Select-Object -First 1
+            if ($exe) { Copy-Item $exe.FullName -Destination "PBNG-Setup-v1.0.104.exe" }
+          } else {
+            Write-Host "No .iss found, skip exe build"
+          }
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PBNG-FULL-v1.0.104
+          path: |
+            PBNG-Launcher-v1.0.104.zip
+            PBNG-Setup-v1.0.104.exe
+          if-no-files-found: warn
