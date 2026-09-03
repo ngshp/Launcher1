@@ -1,104 +1,79 @@
 name: Build EXE + ZIP FULL
-
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup.NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-
-      - name: Find Launcher csproj
+      - name: Find csproj
         shell: pwsh
         run: |
           $proj = Get-ChildItem -Recurse -Filter "*.csproj" | Where-Object { $_.Name -like "*Launcher*" } | Select-Object -First 1
-          Write-Host "Found: $($proj.FullName)"
           echo "PROJ_PATH=$($proj.FullName)" >> $env:GITHUB_ENV
-
-      - name: Publish Launcher
+      - name: Publish
         shell: pwsh
         run: |
           dotnet publish $env:PROJ_PATH -c Release -r win-x64 --self-contained true -o publish /p:PublishSingleFile=false
           Compress-Archive -Path publish/* -DestinationPath PBNG-Launcher-v1.0.104.zip -Force
-
-      - name: Setup Inno Setup + ALL Languages
+      - name: Setup Inno + FIX ALL LANGUAGES (FINAL)
         shell: pwsh
         run: |
           choco install innosetup -y
           $langDir = "C:\Program Files (x86)\Inno Setup 6\Languages"
+          $defaultIsl = "$langDir\Default.isl"
+          $englishIsl = "$langDir\English.isl"
 
-          # List all languages needed from error log
-          $needed = @("Indonesian.isl", "French.isl", "Russian.isl", "ChineseSimplified.isl", "ChineseTraditional.isl", "German.isl", "Spanish.isl", "Japanese.isl", "Korean.isl", "Dutch.isl", "Italian.isl", "Portuguese.isl", "BrazilianPortuguese.isl")
-
-          foreach ($lang in $needed) {
-            $fullPath = "$langDir\$lang"
-            if (-not (Test-Path $fullPath)) {
-              Write-Host "Missing $lang - fixing..."
-              try {
-                $url = "https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/Unofficial/$lang"
-                Invoke-WebRequest -Uri $url -OutFile $fullPath -ErrorAction Stop
-                Write-Host "Downloaded $lang OK"
-              } catch {
-                try {
-                  $url2 = "https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/$lang"
-                  Invoke-WebRequest -Uri $url2 -OutFile $fullPath -ErrorAction Stop
-                  Write-Host "Downloaded $lang from official OK"
-                } catch {
-                  Write-Host "Fallback English for $lang"
-                  Copy-Item "$langDir\English.isl" $fullPath -Force -ErrorAction SilentlyContinue
-                }
+          # Download full language pack from official repo as zip
+          Write-Host "Downloading full language pack..."
+          try {
+            Invoke-WebRequest -Uri "https://github.com/jrsoftware/issrc/archive/refs/heads/main.zip" -OutFile "$env:TEMP\issrc.zip"
+            Expand-Archive "$env:TEMP\issrc.zip" "$env:TEMP\issrc" -Force
+            $srcLangs = Get-ChildItem "$env:TEMP\issrc\*\Files\Languages" -Filter "*.isl" -Recurse -ErrorAction SilentlyContinue
+            foreach ($f in $srcLangs) {
+              $dest = "$langDir\$($f.Name)"
+              if (-not (Test-Path $dest)) {
+                Copy-Item $f.FullName $dest -Force
+                Write-Host "Copied $($f.Name)"
               }
             }
-          }
-          # Also check.iss file for any other languages dynamically
+          } catch { Write-Host "Pack download failed, using fallback" }
+
+          # FINAL FALLBACK: For ANY missing language referenced in.iss, clone English
           $issFile = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
           if ($issFile) {
-            $content = Get-Content $issFile.FullName
-            $langs = [regex]::Matches($content, 'Languages\\([^"]+\.isl)') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique
-            foreach ($lang in $langs) {
-              $fullPath = "$langDir\$lang"
-              if (-not (Test-Path $fullPath)) {
-                Write-Host "Extra missing $lang - using English fallback"
-                Copy-Item "$langDir\English.isl" $fullPath -Force -ErrorAction SilentlyContinue
+            $matches = [regex]::Matches((Get-Content $issFile.FullName -Raw), 'Languages\\([A-Za-z0-9]+\.isl)')
+            foreach ($m in $matches) {
+              $langName = $m.Groups[1].Value
+              $path = "$langDir\$langName"
+              if (-not (Test-Path $path)) {
+                Write-Host "STILL MISSING $langName - Cloning from Default.isl"
+                Copy-Item $defaultIsl $path -Force -ErrorAction SilentlyContinue
+                if (-not (Test-Path $path)) { Copy-Item $englishIsl $path -Force }
               }
             }
           }
-          Write-Host "Final languages:"
-          Get-ChildItem $langDir | Select-Object Name
+          dir $langDir
 
-      - name: Build EXE Installer
+      - name: Build EXE
         shell: pwsh
         run: |
           $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
-          if ($iss) {
-            Write-Host "Building installer: $($iss.FullName)"
-            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
-            Start-Sleep 2
-            $exe = Get-ChildItem -Recurse -Filter "*.exe" | Where-Object { $_.Length -gt 10MB } | Sort-Object Length -Descending | Select-Object -First 1
-            if (-not $exe) { $exe = Get-ChildItem -Recurse -Filter "*Setup*.exe" | Select-Object -First 1 }
-            if ($exe) {
-              Write-Host "Found EXE: $($exe.FullName) - $($exe.Length) bytes"
-              Copy-Item $exe.FullName -Destination "PBNG-Setup-v1.0.104.exe" -Force
-            } else {
-              Write-Host "EXE not found!"
-              Get-ChildItem -Recurse -Filter "*.exe" | Format-Table FullName, Length -ErrorAction SilentlyContinue
-            }
-          }
-          dir PBNG-*.zip, PBNG-*.exe -ErrorAction SilentlyContinue
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
+          $exe = Get-ChildItem -Path $iss.DirectoryName -Filter "*.exe" -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if ($exe) { Copy-Item $exe.FullName "PBNG-Setup-v1.0.104.exe" -Force }
+          dir PBNG-*
 
-      - name: Upload Artifacts
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-FULL-v1.0.104
           path: |
             PBNG-Launcher-v1.0.104.zip
             PBNG-Setup-v1.0.104.exe
-          if-no-files-found: warn
