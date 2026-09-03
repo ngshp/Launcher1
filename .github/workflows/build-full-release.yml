@@ -1,0 +1,54 @@
+name: Build FULL 4 Files Auto Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Find & Publish
+        shell: pwsh
+        run: |
+          $proj = Get-ChildItem -Recurse -Filter "*.csproj" | Where-Object { $_.Name -like "*Launcher*" } | Select-Object -First 1
+          Write-Host "Found proj: $($proj.FullName)"
+          dotnet publish $proj.FullName -c Release -r win-x64 --self-contained true -o publish /p:PublishSingleFile=false
+          Compress-Archive -Path publish/* -DestinationPath PBNG-Launcher-v1.0.104.zip -Force
+          Write-Host "ZIP created"
+
+      - name: Setup Inno
+        run: choco install innosetup -y
+
+      - name: Build EXE
+        shell: pwsh
+        run: |
+          $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
+          if ($iss) {
+            Write-Host "Compiling $($iss.FullName)"
+            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
+            $exe = Get-ChildItem -Recurse -Filter "PBNG*.exe" | Select-Object -First 1
+            if (-not $exe) { $exe = Get-ChildItem -Recurse -Filter "*Setup*.exe" | Select-Object -First 1 }
+            if ($exe) {
+              Copy-Item $exe.FullName -Destination "PBNG-Setup-v1.0.104.exe" -Force
+              Write-Host "EXE created: $($exe.FullName)"
+            }
+          }
+
+      - name: Upload to Release v1.0.104
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.104
+          files: |
+            PBNG-Launcher-v1.0.104.zip
+            PBNG-Setup-v1.0.104.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
