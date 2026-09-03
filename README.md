@@ -58,6 +58,6 @@
 ---
 
 <p align="center">
-  © 2026 PBNG Ecosystem<br/>
+  <br/>
   <i></i>
 </p>
