@@ -3,7 +3,6 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>PBNG-Launcher</AssemblyName>
     <Version>1.0.105</Version>
     <PublishSingleFile>true</PublishSingleFile>
