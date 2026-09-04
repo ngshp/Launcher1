@@ -18,102 +18,75 @@ jobs:
       - name: Find All csproj
         shell: pwsh
         run: |
-          Get-ChildItem -Recurse -Filter "*.csproj" | ForEach-Object { echo $_.FullName }
-          $launcher = Get-ChildItem -Recurse -Filter "NGPB.Launcher.csproj" | Select-Object -First 1
-          if (-not $launcher) { $launcher = Get-ChildItem -Recurse -Filter "*Launcher*.csproj" | Select-Object -First 1 }
-          echo "LAUNCHER=$($launcher.FullName)" >> $env:GITHUB_ENV
-
-          $game = Get-ChildItem -Recurse -Filter "NGPB.Game.csproj" | Select-Object -First 1
-          if (-not $game) { $game = Get-ChildItem -Recurse -Filter "*Game*.csproj" | Where-Object { $_.DirectoryName -notlike "*Launcher*" } | Select-Object -First 1 }
+          $projects = Get-ChildItem -Recurse -Filter "*.csproj"
+          $launcher = $projects | Where-Object { $_.Name -like "*Launcher*" } | Select-Object -First 1
+          if ($launcher) { echo "LAUNCHER=$($launcher.FullName)" >> $env:GITHUB_ENV }
+          
+          $game = $projects | Where-Object { $_.Name -like "*Game*" -and $_.DirectoryName -notlike "*Launcher*" } | Select-Object -First 1
           if ($game) { echo "GAME=$($game.FullName)" >> $env:GITHUB_ENV; echo "FOUND GAME: $($game.FullName)" } else { echo "GAME_NOT_FOUND=true" >> $env:GITHUB_ENV }
-
-          $server = Get-ChildItem -Recurse -Filter "NGPB.Server.csproj" | Select-Object -First 1
-          if (-not $server) { $server = Get-ChildItem -Recurse -Filter "*Server*.csproj" | Select-Object -First 1 }
+          
+          $server = $projects | Where-Object { $_.Name -like "*Server*" } | Select-Object -First 1
           if ($server) { echo "SERVER=$($server.FullName)" >> $env:GITHUB_ENV; echo "FOUND SERVER: $($server.FullName)" } else { echo "SERVER_NOT_FOUND=true" >> $env:GITHUB_ENV }
 
-      - name: Publish Launcher 118 MB SINGLE FILE - Layer 1 Blue + Layer 2 Pink
+      - name: Publish Launcher
         shell: pwsh
         run: |
-          dotnet publish $env:LAUNCHER -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o publish/launcher
-          $exe = Get-ChildItem publish/launcher/*.exe | Select-Object -First 1
-          Copy-Item $exe.FullName "PBNG-Launcher-v1.0.105.exe" -Force
-          dir publish/launcher
-          echo "LAUNCHER SIZE: $((Get-Item $exe.FullName).Length / 1MB) MB"
+          if ($env:LAUNCHER) { 
+            dotnet publish $env:LAUNCHER -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o publish/launcher
+            $exe = Get-ChildItem publish/launcher/*.exe | Select-Object -First 1
+            if ($exe) { Copy-Item $exe.FullName "PBNG-Launcher-v1.0.105.exe" -Force }
+          }
 
-      - name: Publish Game Client 60 MB - RED Yard 8v8 + AUG A3
+      - name: Publish Game Client
         shell: pwsh
         run: |
-          if ($env:GAME_NOT_FOUND -ne "true" -and $env:GAME) {
+          if ($env:GAME_NOT_FOUND -ne "true") {
             dotnet publish $env:GAME -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/game
             $exe = Get-ChildItem publish/game/*.exe | Select-Object -First 1
             if ($exe) { Copy-Item $exe.FullName "PBNG-Game-Client-v1.0.105.exe" -Force }
-            dir publish/game
           } else {
-            echo "GameClient csproj not found - creating placeholder"
-            mkdir publish/game -Force
-            "Game Client 60 MB - RED Yard Map 8v8 - AUG A3 28/120" | Out-File publish/game/README-GAME.txt
+            mkdir publish/game -Force; "Placeholder" | Out-File publish/game/README-GAME.txt
           }
 
-      - name: Publish Server 15 MB - 0.0.0.0:39190 VPS
+      - name: Publish Server
         shell: pwsh
         run: |
-          if ($env:SERVER_NOT_FOUND -ne "true" -and $env:SERVER) {
+          if ($env:SERVER_NOT_FOUND -ne "true") {
             dotnet publish $env:SERVER -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/server
             $exe = Get-ChildItem publish/server/*.exe | Select-Object -First 1
             if ($exe) { Copy-Item $exe.FullName "PBNG-Server-v1.0.105.exe" -Force }
-            dir publish/server
           } else {
-            echo "Server csproj not found - creating placeholder"
-            mkdir publish/server -Force
-            "Server 15 MB - IP 0.0.0.0:39190 - GM Whitelist - HWID+IP Ban" | Out-File publish/server/README-SERVER.txt
+            mkdir publish/server -Force; "Placeholder" | Out-File publish/server/README-SERVER.txt
           }
 
-      - name: Build ALL-IN-ONE + ZIP 200 MB + BAT 1 KLIK MAIN
+      - name: Build ALL-IN-ONE
         shell: pwsh
         run: |
           mkdir publish/all -Force
-          Copy-Item publish/launcher/* publish/all/ -Force -Recurse
-          if (Test-Path "publish/game/*") { Copy-Item publish/game/* publish/all/ -Force -Recurse -ErrorAction SilentlyContinue }
-          if (Test-Path "publish/server/*") { Copy-Item publish/server/* publish/all/ -Force -Recurse -ErrorAction SilentlyContinue }
-          if (Test-Path "START-*.bat") { Copy-Item "START-*.bat" publish/all/ -Force }
-          if (Test-Path "*.bat") { Copy-Item "*.bat" publish/all/ -Force -ErrorAction SilentlyContinue }
-          dir publish/all
-
+          Copy-Item publish/launcher/* publish/all/ -ErrorAction SilentlyContinue
+          Copy-Item publish/game/* publish/all/ -ErrorAction SilentlyContinue
+          Copy-Item publish/server/* publish/all/ -ErrorAction SilentlyContinue
+          Get-ChildItem -Filter "*.bat" | Copy-Item -Destination publish/all/ -ErrorAction SilentlyContinue
           Compress-Archive -Path publish/launcher/* -DestinationPath PBNG-Launcher-v1.0.105.zip -Force
           Compress-Archive -Path publish/all/* -DestinationPath PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105-200MB.zip -Force
-          dir PBNG-*.zip
-          dir PBNG-*.exe
 
-      - name: Setup Inno + Build Installer.exe
+      - name: Setup Inno + Build Installer
         shell: pwsh
         continue-on-error: true
         run: |
-          try { choco install innosetup -y } catch { echo "Choco install warning: $_" }
+          choco install innosetup -y
           $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
-          if ($iss) {
-            try {
-              & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
-              $exe = Get-ChildItem -Path $iss.DirectoryName -Filter "*.exe" -Recurse | Where-Object { $_.Name -like "*Setup*" -or $_.Name -like "*Installer*" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-              if (-not $exe) { $exe = Get-ChildItem -Filter "*.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 }
-              if ($exe) { Copy-Item $exe.FullName "PBNG-Setup-Installer-v1.0.105.exe" -Force; echo "INSTALLER: $($exe.FullName)" }
-            } catch { echo "ISCC build warning: $_" }
-          } else {
-            echo "No .iss file found - skipping installer build (other files unaffected)"
+          if ($iss) { 
+            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
+            $exe = Get-ChildItem -Path $iss.DirectoryName -Filter "*.exe" -Recurse | Where-Object { $_.Name -like "*Setup*" } | Select-Object -First 1
+            if ($exe) { Copy-Item $exe.FullName "PBNG-Setup-Installer-v1.0.105.exe" -Force }
           }
-          dir PBNG-*.exe -ErrorAction SilentlyContinue
 
-      - name: Upload FULL 4 Files - Launcher + Game + Server + Installer
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-FULL-v1.0.105-ALL-IN-ONE-200MB
           path: |
-            PBNG-Launcher-v1.0.105.exe
-            PBNG-Game-Client-v1.0.105.exe
-            PBNG-Server-v1.0.105.exe
-            PBNG-Setup-Installer-v1.0.105.exe
-            PBNG-Launcher-v1.0.105.zip
-            PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105-200MB.zip
+            *.exe
+            *.zip
             publish/all/
-            publish/launcher/
-            publish/game/
-            publish/server/
