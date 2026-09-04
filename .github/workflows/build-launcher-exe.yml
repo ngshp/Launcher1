@@ -24,7 +24,8 @@ jobs:
             $projFile = Get-ChildItem -Recurse -Filter "*$key*.csproj" | Select-Object -First 1
             if ($projFile) {
               Write-Host "Publishing: $($projFile.FullName)"
-              dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true "/p:NoWarn=CS0169;CS0649;CS4014" -o $projects[$key]
+              # Menggunakan perintah standar untuk menghindari error MSB1005
+              dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o $projects[$key]
             }
           }
 
@@ -41,7 +42,12 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup -y
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "Installer/NGPB.Installer.iss"
+          # Memastikan file ada sebelum eksekusi
+          if (Test-Path "Installer/NGPB.Installer.iss") {
+            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "Installer/NGPB.Installer.iss"
+          } else {
+            Write-Error "File Installer/NGPB.Installer.iss tidak ditemukan!"
+          }
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
