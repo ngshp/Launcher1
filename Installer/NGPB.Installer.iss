@@ -18,6 +18,6 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [Files]
-; Pastikan folder Languages ada di dalam folder Installer/
-Source: "Languages\*"; DestDir: "{app}\Languages"; Flags: recursesubdir
+; Menggunakan flag yang lebih standar (ignoreversion) agar tidak error unknown flag
+Source: "Languages\*"; DestDir: "{app}\Languages"; Flags: ignoreversion
 Source: "publish\all\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdir
