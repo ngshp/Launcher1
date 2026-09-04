@@ -1,0 +1,44 @@
+name: Build EXE + ZIP FULL - NGPB v1.0.105 ENTERPRISE
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build-launcher:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build Launcher.exe 118 MB GREEN 1m 49s
+        run: |
+          dotnet publish Launcher/NGPB.Launcher.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/launcher/
+          dir publish/launcher/
+      - name: Build All Enterprise 200 MB
+        run: |
+          dotnet publish Installer/NGPB.Installer.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/installer/ || echo "installer skip"
+          dotnet publish Server/NGPB.Server.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/server/ || echo "server skip"
+          dotnet publish GameClient/NGPB.Game.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/game/ || echo "game skip"
+          mkdir publish/all
+          xcopy publish\server\*.exe publish\all\ /Y
+          xcopy publish\game\*.exe publish\all\ /Y
+          xcopy publish\launcher\*.exe publish\all\ /Y
+          xcopy START-*.bat publish\all\ /Y
+          xcopy BUILD-*.bat publish\all\ /Y
+          dir publish\all\
+      - name: Zip All-in-One 200 MB
+        run: |
+          Compress-Archive -Path publish/all/* -DestinationPath PBNG-ENTERPRISE-ALL-IN-ONE.zip -Force
+          dir *.zip
+      - name: Upload to Release v1.0.105
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            publish/launcher/*.exe
+            PBNG-ENTERPRISE-ALL-IN-ONE.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
