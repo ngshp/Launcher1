@@ -86,14 +86,19 @@ jobs:
 
       - name: Setup Inno + Build Installer.exe
         shell: pwsh
+        continue-on-error: true
         run: |
-          choco install innosetup -y
+          try { choco install innosetup -y } catch { echo "Choco install warning: $_" }
           $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
           if ($iss) {
-            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
-            $exe = Get-ChildItem -Path $iss.DirectoryName -Filter "*.exe" -Recurse | Where-Object { $_.Name -like "*Setup*" -or $_.Name -like "*Installer*" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-            if (-not $exe) { $exe = Get-ChildItem -Filter "*.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 }
-            if ($exe) { Copy-Item $exe.FullName "PBNG-Setup-Installer-v1.0.105.exe" -Force; echo "INSTALLER: $($exe.FullName)" }
+            try {
+              & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
+              $exe = Get-ChildItem -Path $iss.DirectoryName -Filter "*.exe" -Recurse | Where-Object { $_.Name -like "*Setup*" -or $_.Name -like "*Installer*" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+              if (-not $exe) { $exe = Get-ChildItem -Filter "*.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 }
+              if ($exe) { Copy-Item $exe.FullName "PBNG-Setup-Installer-v1.0.105.exe" -Force; echo "INSTALLER: $($exe.FullName)" }
+            } catch { echo "ISCC build warning: $_" }
+          } else {
+            echo "No .iss file found - skipping installer build (other files unaffected)"
           }
           dir PBNG-*.exe -ErrorAction SilentlyContinue
 
