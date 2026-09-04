@@ -1,0 +1,23 @@
+name: Build PBNG ENTERPRISE v1.0.105
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: dotnet publish GameClient/Source/AntiCheat/Enterprise/NGPB.AntiCheat.Enterprise.csproj -c Release -r win-x64 --self-contained true -o publish/anticheat
+      - run: dotnet publish GameClient/NGPB.Game.csproj -c Release -r win-x64 --self-contained true -o publish/game
+      - run: Compress-Archive -Path publish/* -DestinationPath PBNG-ENTERPRISE-FULL-v1.0.105.zip
+      - uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            publish/game/ngpb.exe
+            publish/anticheat/NGPB.AntiCheat.Enterprise.dll
+            PBNG-ENTERPRISE-FULL-*.zip
