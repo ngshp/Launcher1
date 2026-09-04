@@ -35,8 +35,9 @@ jobs:
             "SERVER" = "publish/server"
           }
           foreach ($key in $projects.Keys) {
-            if ($env:$key) {
-              dotnet publish $env:$key -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:NoWarn=CS0169;CS0649;CS4014 -o $projects[$key]
+            if ($env:GITHUB_ENV -match $key) {
+               $path = (Get-Item "env:$key").Value
+               dotnet publish $path -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:NoWarn=CS0169;CS0649;CS4014 -o $projects[$key]
             }
           }
 
