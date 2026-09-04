@@ -15,48 +15,34 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Find All csproj
-        shell: pwsh
-        run: |
-          $projects = Get-ChildItem -Recurse -Filter "*.csproj"
-          $launcher = $projects | Where-Object { $_.Name -like "*Launcher*" } | Select-Object -First 1
-          if ($launcher) { echo "LAUNCHER=$($launcher.FullName)" >> $env:GITHUB_ENV }
-          $game = $projects | Where-Object { $_.Name -like "*Game*" -and $_.DirectoryName -notlike "*Launcher*" } | Select-Object -First 1
-          if ($game) { echo "GAME=$($game.FullName)" >> $env:GITHUB_ENV }
-          $server = $projects | Where-Object { $_.Name -like "*Server*" } | Select-Object -First 1
-          if ($server) { echo "SERVER=$($server.FullName)" >> $env:GITHUB_ENV }
-
       - name: Publish Projects
         shell: pwsh
         run: |
-          $projects = @{
-            "LAUNCHER" = "publish/launcher";
-            "GAME" = "publish/game";
-            "SERVER" = "publish/server"
-          }
+          $projects = @{"Launcher"="publish/launcher"; "Game"="publish/game"; "Server"="publish/server"}
           foreach ($key in $projects.Keys) {
-            if ($env:GITHUB_ENV -match $key) {
-               $path = (Get-Item "env:$key").Value
-               dotnet publish $path -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:NoWarn=CS0169;CS0649;CS4014 -o $projects[$key]
+            $projFile = Get-ChildItem -Recurse -Filter "*$key*.csproj" | Select-Object -First 1
+            if ($projFile) {
+              dotnet publish $projFile.FullName -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:NoWarn=CS0169;CS0649;CS4014 -o $projects[$key]
             }
           }
 
-      - name: Build ALL-IN-ONE
+      - name: Prepare Installer Files
         shell: pwsh
         run: |
           mkdir publish/all -Force
           Copy-Item publish/*/* -Destination publish/all/ -ErrorAction SilentlyContinue
-          Get-ChildItem -Filter "*.bat" | Copy-Item -Destination publish/all/ -ErrorAction SilentlyContinue
-          Compress-Archive -Path publish/all/* -DestinationPath PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105.zip -Force
+          # Copy folder Languages jika ada agar terbaca oleh Inno Setup
+          if (Test-Path "Installer/Languages") {
+            Copy-Item "Installer/Languages" -Destination "publish/all/" -Recurse
+          }
 
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
-          $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
-          if ($iss) { 
-            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
-          }
+          $iss = "Installer/NGPB.Installer.iss"
+          # Kita pindah ke direktori root agar path "Languages\Indonesian.isl" di .iss terbaca
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -64,5 +50,4 @@ jobs:
           name: PBNG-FULL-v1.0.105-FINAL
           path: |
             *.exe
-            *.zip
             publish/all/
