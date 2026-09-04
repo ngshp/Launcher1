@@ -24,7 +24,6 @@ jobs:
             $projFile = Get-ChildItem -Recurse -Filter "*$key*.csproj" | Select-Object -First 1
             if ($projFile) {
               Write-Host "Publishing: $($projFile.FullName)"
-              # Menggunakan perintah standar untuk menghindari error MSB1005
               dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o $projects[$key]
             }
           }
@@ -42,11 +41,14 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup -y
-          # Memastikan file ada sebelum eksekusi
-          if (Test-Path "Installer/NGPB.Installer.iss") {
-            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "Installer/NGPB.Installer.iss"
+          # Mencari file .iss secara otomatis di seluruh folder
+          $issFile = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
+          
+          if ($issFile) {
+            Write-Host "File .iss ditemukan di: $($issFile.FullName)"
+            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$($issFile.FullName)"
           } else {
-            Write-Error "File Installer/NGPB.Installer.iss tidak ditemukan!"
+            Write-Error "Gagal: File .iss tidak ditemukan di repositori. Pastikan file ada di folder Installer!"
           }
 
       - name: Upload Artifacts
@@ -56,3 +58,4 @@ jobs:
           path: |
             *.exe
             publish/all/
+            **/*.exe
