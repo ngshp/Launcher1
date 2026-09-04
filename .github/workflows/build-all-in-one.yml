@@ -1,0 +1,23 @@
+name: Build PBNG ALL-IN-ONE v1.0.105
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: dotnet publish GameClient/NGPB.Game.csproj -c Release -r win-x64 --self-contained true -o publish/game
+      - run: dotnet publish GameClient/Source/AntiCheat/NGPB.AntiCheat.csproj -c Release -r win-x64 --self-contained true -o publish/anticheat
+      - run: Compress-Archive -Path publish/* -DestinationPath PBNG-ALL-IN-ONE-FULL-v${{ github.ref_name }}.zip
+      - uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            publish/game/ngpb.exe
+            publish/anticheat/NGPB.AntiCheat.exe
+            PBNG-ALL-IN-ONE-FULL-*.zip
