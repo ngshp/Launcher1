@@ -18,6 +18,6 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [Files]
-; Menggunakan flag yang lebih standar (ignoreversion) agar tidak error unknown flag
-Source: "Languages\*"; DestDir: "{app}\Languages"; Flags: ignoreversion
-Source: "publish\all\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdir
+; Menggunakan format paling standar tanpa Flags sama sekali
+Source: "Languages\*"; DestDir: "{app}\Languages"
+Source: "publish\all\*"; DestDir: "{app}"
