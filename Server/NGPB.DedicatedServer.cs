@@ -204,7 +204,7 @@ namespace NGPB.Server
             try{ var data = Encoding.UTF8.GetBytes(msg+"\n"); await tcp.GetStream().WriteAsync(data,0,data.Length); } catch{}
         }
 
-        static void Broadcast(string msg, Client exclude)
+        static void Broadcast(string msg, Client exclude = null)
         {
             foreach(var c in Clients.ToList()) if(c!=exclude) try{ Send(c.Tcp, msg).Wait(); } catch{}
             Console.ForegroundColor = ConsoleColor.DarkGray;
