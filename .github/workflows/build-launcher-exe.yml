@@ -21,75 +21,46 @@ jobs:
           $projects = Get-ChildItem -Recurse -Filter "*.csproj"
           $launcher = $projects | Where-Object { $_.Name -like "*Launcher*" } | Select-Object -First 1
           if ($launcher) { echo "LAUNCHER=$($launcher.FullName)" >> $env:GITHUB_ENV }
-          
           $game = $projects | Where-Object { $_.Name -like "*Game*" -and $_.DirectoryName -notlike "*Launcher*" } | Select-Object -First 1
-          if ($game) { echo "GAME=$($game.FullName)" >> $env:GITHUB_ENV; echo "FOUND GAME: $($game.FullName)" } else { echo "GAME_NOT_FOUND=true" >> $env:GITHUB_ENV }
-          
+          if ($game) { echo "GAME=$($game.FullName)" >> $env:GITHUB_ENV }
           $server = $projects | Where-Object { $_.Name -like "*Server*" } | Select-Object -First 1
-          if ($server) { echo "SERVER=$($server.FullName)" >> $env:GITHUB_ENV; echo "FOUND SERVER: $($server.FullName)" } else { echo "SERVER_NOT_FOUND=true" >> $env:GITHUB_ENV }
+          if ($server) { echo "SERVER=$($server.FullName)" >> $env:GITHUB_ENV }
 
-      - name: Publish Launcher
+      - name: Publish Projects
         shell: pwsh
         run: |
-          if ($env:LAUNCHER) { 
-            dotnet publish $env:LAUNCHER -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o publish/launcher
-            $exe = Get-ChildItem publish/launcher/*.exe | Select-Object -First 1
-            if ($exe) { Copy-Item $exe.FullName "PBNG-Launcher-v1.0.105.exe" -Force }
+          $projects = @{
+            "LAUNCHER" = "publish/launcher";
+            "GAME" = "publish/game";
+            "SERVER" = "publish/server"
           }
-
-      - name: Publish Game Client
-        shell: pwsh
-        run: |
-          if ($env:GAME_NOT_FOUND -ne "true") {
-            dotnet publish $env:GAME -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/game
-            $exe = Get-ChildItem publish/game/*.exe | Select-Object -First 1
-            if ($exe) { Copy-Item $exe.FullName "PBNG-Game-Client-v1.0.105.exe" -Force }
-          } else {
-            mkdir publish/game -Force; "Placeholder" | Out-File publish/game/README-GAME.txt
-          }
-
-      - name: Publish Server
-        shell: pwsh
-        run: |
-          if ($env:SERVER_NOT_FOUND -ne "true") {
-            dotnet publish $env:SERVER -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/server
-            $exe = Get-ChildItem publish/server/*.exe | Select-Object -First 1
-            if ($exe) { Copy-Item $exe.FullName "PBNG-Server-v1.0.105.exe" -Force }
-          } else {
-            mkdir publish/server -Force; "Placeholder" | Out-File publish/server/README-SERVER.txt
+          foreach ($key in $projects.Keys) {
+            if ($env:$key) {
+              dotnet publish $env:$key -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:NoWarn=CS0169;CS0649;CS4014 -o $projects[$key]
+            }
           }
 
       - name: Build ALL-IN-ONE
         shell: pwsh
         run: |
           mkdir publish/all -Force
-          Copy-Item publish/launcher/* publish/all/ -ErrorAction SilentlyContinue
-          Copy-Item publish/game/* publish/all/ -ErrorAction SilentlyContinue
-          Copy-Item publish/server/* publish/all/ -ErrorAction SilentlyContinue
+          Copy-Item publish/*/* -Destination publish/all/ -ErrorAction SilentlyContinue
           Get-ChildItem -Filter "*.bat" | Copy-Item -Destination publish/all/ -ErrorAction SilentlyContinue
-          Compress-Archive -Path publish/launcher/* -DestinationPath PBNG-Launcher-v1.0.105.zip -Force
-          Compress-Archive -Path publish/all/* -DestinationPath PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105-200MB.zip -Force
+          Compress-Archive -Path publish/all/* -DestinationPath PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105.zip -Force
 
-      - name: Setup Inno + Build Installer
+      - name: Build Installer
         shell: pwsh
-        continue-on-error: true
         run: |
           choco install innosetup -y
-          # Mencari file .iss dengan aman
           $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
           if ($iss) { 
-            # Menjalankan ISCC dengan memastikan lokasi file ditemukan
             & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
-            $exe = Get-ChildItem -Path $iss.DirectoryName -Filter "*.exe" -Recurse | Where-Object { $_.Name -like "*Setup*" } | Select-Object -First 1
-            if ($exe) { Copy-Item $exe.FullName "PBNG-Setup-Installer-v1.0.105.exe" -Force }
-          } else {
-            Write-Host "File .iss tidak ditemukan, melewati tahap installer..."
           }
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-FULL-v1.0.105-ALL-IN-ONE-200MB
+          name: PBNG-FULL-v1.0.105-FINAL
           path: |
             *.exe
             *.zip
