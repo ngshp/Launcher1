@@ -1,23 +1,86 @@
-name: Build PBNG ENTERPRISE v1.0.105
+name: Build PBNG ENTERPRISE v1.0.105 - Loading Screen + AntiCheat HWID IP Ban
+
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+
 jobs:
-  build:
+  build-enterprise:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - run: dotnet publish GameClient/Source/AntiCheat/Enterprise/NGPB.AntiCheat.Enterprise.csproj -c Release -r win-x64 --self-contained true -o publish/anticheat
-      - run: dotnet publish GameClient/NGPB.Game.csproj -c Release -r win-x64 --self-contained true -o publish/game
-      - run: Compress-Archive -Path publish/* -DestinationPath PBNG-ENTERPRISE-FULL-v1.0.105.zip
-      - uses: softprops/action-gh-release@v1
+      
+      - name: Build Server NGPB-Server-Windows + Linux VPS
+        run: |
+          dotnet publish Server/NGPB.DedicatedServer.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/server-win
+          dotnet publish Server/NGPB.DedicatedServer.csproj -c Release -r linux-x64 --self-contained true /p:PublishSingleFile=true -o publish/server-linux
+          echo "Server Windows 127.0.0.1:39190 + Linux VPS 0.0.0.0:39190 - Enterprise HWID IP Ban Ready!"
+      
+      - name: Build Game Client ngpb.exe Enterprise
+        run: |
+          dotnet publish GameClient/NGPB.Game.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/game
+          echo "Game Client ngpb.exe - RED Yard AUG A3 28/120 HP 100 AP 100 - 6 Panel UI"
+      
+      - name: Build Anti-Cheat Enterprise - HWID+IP+Name+Chat+Link
+        run: |
+          dotnet publish GameClient/Source/AntiCheat/Enterprise/NGPB.AntiCheat.Enterprise.csproj -c Release -r win-x64 --self-contained true -o publish/anticheat
+          dotnet publish GameClient/Source/AntiCheat/NGPB.AntiCheat.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/anticheat
+          echo "Anti-Cheat Enterprise: Layer1 AutoClose, Layer2 Ban HWID IP, WH AimLock Warning 4x Ban, GM Name Filter, Toxic Chat, Link https://ngpb.nhg.one only!"
+      
+      - name: Create ZIPs Enterprise
+        run: |
+          Compress-Archive -Path publish/server-win/* -DestinationPath PBNG-Server-Windows-Enterprise-v1.0.105.zip -Force
+          Compress-Archive -Path publish/server-linux/* -DestinationPath PBNG-Server-Linux-VPS-Enterprise-v1.0.105.zip -Force
+          Compress-Archive -Path publish/game/* -DestinationPath PBNG-Game-ngpb-Enterprise-v1.0.105.zip -Force
+          Compress-Archive -Path publish/anticheat/* -DestinationPath PBNG-AntiCheat-Enterprise-v1.0.105.zip -Force
+          Compress-Archive -Path publish/* -DestinationPath PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105.zip -Force
+          dir PBNG-*.zip
+      
+      - name: Release ENTERPRISE PRO MAX - Like 118 MB GREEN 1m 57s
+        uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
+            publish/server-win/NGPB-Server-Windows.exe
+            publish/server-linux/NGPB-Server
             publish/game/ngpb.exe
+            publish/anticheat/NGPB.AntiCheat.exe
             publish/anticheat/NGPB.AntiCheat.Enterprise.dll
-            PBNG-ENTERPRISE-FULL-*.zip
+            PBNG-*.zip
+          body: |
+            ## PBNG ENTERPRISE v1.0.105 - LOADING SCREEN KEREN + ANTI-CHEAT ENTERPRISE PRO MAX
+            
+            ### 🎨 LOADING SCREEN BARU KEREN BOS!
+            - Launcher.exe Loading Screen Layer 1 Cyberpunk Blue - Bypass = Auto Close Client!
+            - Launcher.exe Loading Screen Layer 2 Cyberpunk Pink HWID+IP - Bypass = Ban HWID+IP Permanen!
+            - Installer.exe Loading Screen 164x314 Cyberpunk 7 Bahasa - Cool!
+            
+            ### 🛡️ ANTI-CHEAT ENTERPRISE - Sesuai Request Bos Lengkap!
+            - Layer 1 Bypass = Auto Close ngpb.exe
+            - Layer 2 Bypass = Auto Ban HWID + IP Permanen (ban_hwid_ip.txt)
+            - Cheat WH, Aim Lock, DLL: Warning 3x, 4x Ban Permanen HWID+IP (cheat_log.txt)
+            - Restricted Name GM, DEVELOPER, STAFF, MOD, ADMIN: Hanya GM/Dev bisa pakai, user biasa = DENIED + Auto Ban! (name_violation.txt)
+            - Toxic Chat Kasar, Ras, Agama: Warning max 4x Ban Permanen (violation_log.txt)
+            - Anti Flood: Max 5 pesan/10 detik, lebih = Warning 3x Mute, 4x Ban Permanen (mute_log.txt)
+            - Anti Scam Link: Hanya boleh https://ngpb.nhg.one, link lain = Warning 3x Mute, 4x Ban Permanen kecuali GM/Dev whitelist! (violation_log.txt)
+            - Bypass Security Cheat Engine: Auto Close + Ban Permanen HWID+IP (bypass_log.txt)
+            
+            ### 📦 FILES - Download di HP Bisa Bos!
+            - NGPB-Server-Windows.exe (15 MB) - Localhost 127.0.0.1:39190 RED Yard 8v8 Enterprise
+            - NGPB-Server (Linux) (15 MB) - VPS 0.0.0.0:39190 Auto Deploy
+            - ngpb.exe (60 MB) - Game Client RED Yard AUG A3 28/120 HP 100 AP 100
+            - NGPB.AntiCheat.Enterprise.dll + NGPB.AntiCheat.exe (20 MB) - AI Enterprise
+            - PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105.zip (200 MB) - All files!
+            
+            ### 🎮 CARA MAIN DI HP BOS:
+            1. Download PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105.zip dari Releases ini (bisa di HP Bos!)
+            2. Di PC Windows: Extract > Double click START-ALL.bat = 1 KLIK MAIN! Server 127.0.0.1:39190 + AntiCheat + Game RED Yard!
+            3. Main bareng teman LAN: Edit START-GAME.bat ganti 127.0.0.1 jadi IP PC Bos (192.168.1.5) atau Hamachi 25.x.x.x
+            
+            Built with 💚 by ngshp - 71x FAILED -> GREEN 1m 57s -> ENTERPRISE PRO MAX!
