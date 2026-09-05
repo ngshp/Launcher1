@@ -1,49 +1,47 @@
-name: build-launcher
+name: Build PBNG Launcher v360 PRO
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup .NET
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup.NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: Find csproj
-        shell: pwsh
+      - name: Restore
+        run: dotnet restore PBNG-Ecosystem/Launcher/Launcher.csproj
+
+      - name: Publish launcher-v360 (sesuai gambar bos)
+        run: dotnet publish PBNG-Ecosystem/Launcher/Launcher.csproj -c Release -o C:\PBNG\publish\launcher-v360 --self-contained false
+
+      - name: Create ZIP FINAL
+        shell: powershell
         run: |
-          $proj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          echo "CSPROJ=$($proj.FullName)" >> $env:GITHUB_ENV
-          Write-Host "Found $($proj.FullName)"
+          cd C:\PBNG\publish\launcher-v360
+          Compress-Archive -Path * -DestinationPath PBNG-FULL-v1.0.105-FINAL.zip -Force
+          dir
 
-      - name: Publish
-        shell: pwsh
-        run: dotnet publish ${{ env.CSPROJ }} -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
-
-      - name: Setup Inno
-        shell: pwsh
-        run: |
-          choco install innosetup -y --force
-
-      - name: Build EXE
-        shell: pwsh
-        run: |
-          $iss = Get-ChildItem -Recurse -Filter "PBNG-Setup.iss" | Select-Object -First 1
-          Write-Host "Building ISS: $($iss.FullName)"
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
-
-      - name: Upload Artifacts
+      - name: Upload launcher.exe artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-Launcher
-          path: |
-            PBNG-Ecosystem/Launcher/Output/*.exe
-            publish/
+          name: PBNG-Launcher-v360-exe
+          path: C:\PBNG\publish\launcher-v360\
+
+      - name: Create Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.106
+          name: PBNG Launcher v1.0.106 - AUTO UPDATE PRO
+          files: |
+            C:\PBNG\publish\launcher-v360\PBNG-FULL-v1.0.105-FINAL.zip
+            C:\PBNG\publish\launcher-v360\Launcher.exe
