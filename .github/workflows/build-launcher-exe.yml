@@ -33,29 +33,21 @@ jobs:
         run: |
           mkdir publish/all -Force
           Copy-Item publish/*/* -Destination publish/all/ -ErrorAction SilentlyContinue
-          if (Test-Path "Installer/Languages") {
-            Copy-Item "Installer/Languages" -Destination "publish/all/" -Recurse
-          }
 
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
-          # Mencari file .iss secara otomatis di seluruh folder
           $issFile = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
-          
           if ($issFile) {
-            Write-Host "File .iss ditemukan di: $($issFile.FullName)"
             & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$($issFile.FullName)"
           } else {
-            Write-Error "Gagal: File .iss tidak ditemukan di repositori. Pastikan file ada di folder Installer!"
+            Write-Error "Gagal: File .iss tidak ditemukan!"
           }
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-FULL-v1.0.105-FINAL
-          path: |
-            *.exe
-            publish/all/
-            **/*.exe
+          # Hanya ambil file .exe yang ada di folder Installer
+          path: Installer/*.exe
