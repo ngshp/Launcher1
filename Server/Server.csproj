@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <!-- Baris sakti untuk menghilangkan semua warning kuning -->
+    <NoWarn>$(NoWarn);CS0169;CS0649;CS0414;CS0168;CS0219</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Tambahkan library atau package yang bos perlukan di sini jika ada -->
+  </ItemGroup>
+
+</Project>
