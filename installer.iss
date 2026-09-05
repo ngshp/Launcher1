@@ -11,10 +11,10 @@ SolidCompression=yes
 SetupIconFile=assets\logo.ico
 
 [Files]
+; Mengambil semua hasil publish
 Source: "publish\all\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-; Menggunakan {app}\* agar otomatis mengambil file exe utama yang ada
 Name: "{group}\NGPB Enterprise"; Filename: "{app}\*.exe"
 Name: "{commondesktop}\NGPB Enterprise"; Filename: "{app}\*.exe"; Tasks: desktopicon
 
