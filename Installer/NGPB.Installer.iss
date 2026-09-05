@@ -8,7 +8,7 @@ OutputDir=.
 OutputBaseFilename=PBNG-Setup-Installer-v1.0.105
 Compression=lzma2/ultra
 SolidCompression=yes
-SetupIconFile=..\Launcher\Resources\icon.ico
+SetupIconFile=..\Launcher\Resources\1788539434100.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
