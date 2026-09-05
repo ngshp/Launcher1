@@ -16,6 +16,12 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Set Version
+        shell: pwsh
+        run: |
+          $ver = "1.0.${{ github.run_number }}"
+          echo "BUILD_VERSION=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append
+
       - name: Siapkan Folder
         shell: pwsh
         run: |
@@ -23,22 +29,15 @@ jobs:
           New-Item -ItemType Directory -Path "publish/all" -Force
           New-Item -ItemType Directory -Path "Output" -Force
           
-          # Cari file ikon .png atau .ico mana saja untuk aset installer
+          # Ambil ikon kalau ada
           $iconFile = Get-ChildItem -Recurse -Filter "*.ico" | Select-Object -First 1
-          if (-not $iconFile) {
-            $pngFile = Get-ChildItem -Recurse -Filter "*.png" | Select-Object -First 1
-            if ($pngFile) { Copy-Item $pngFile.FullName -Destination "assets/logo.ico" -Force }
-          } else {
-            Copy-Item $iconFile.FullName -Destination "assets/logo.ico" -Force
-          }
+          if ($iconFile) { Copy-Item $iconFile.FullName -Destination "assets/logo.ico" -Force }
 
       - name: Publish Project
         shell: pwsh
         run: |
           $projFile = Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object -First 1
-          
-          # Parameter /p:ApplicationIcon= dikosongkan untuk override .csproj
-          dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:ApplicationIcon="" /p:GenerateRuntimeConfigurationFiles=true -o publish/all
+          dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:ApplicationIcon="" -o publish/all
 
       - name: Build Installer
         shell: pwsh
@@ -49,5 +48,5 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-INSTALLER
+          name: PBNG-INSTALLER-v1.0.${{ github.run_number }}
           path: Output/*.exe
