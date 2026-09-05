@@ -8,8 +8,8 @@ OutputDir=Output
 OutputBaseFilename=PBNG-Setup-v1.0.105-FINAL
 Compression=lzma2/ultra
 SolidCompression=yes
-; Ikon dikosongkan dulu agar tidak error "file not found" saat build
-; SetupIconFile=icon.ico 
+; Ikon ini dibuat otomatis oleh workflow
+SetupIconFile=installer_icon.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -18,13 +18,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Karena file .iss ada di folder "Installer", kita gunakan ".." untuk naik ke root
-; lalu masuk ke folder "publish/all"
+; Mengambil semua hasil publish dari folder root
 Source: "..\publish\all\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"
-Name: "{commondesktop}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"; Tasks: desktopicon
+Name: "{group}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\Launcher.exe"
+Name: "{commondesktop}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\Launcher.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\Launcher.exe"; Description: "{cm:LaunchProgram,NGPB Enterprise}"; Flags: nowait postinstall skipifsilent
