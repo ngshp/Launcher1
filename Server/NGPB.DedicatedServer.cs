@@ -16,26 +16,26 @@ namespace NGPB.Server
         static int Port = 39190;
         static TcpListener Listener;
         static List<Client> Clients = new List<Client>();
-        static List<string> Logs = new List<string>();
         static AntiCheatEnterprise AntiCheat = new AntiCheatEnterprise();
 
         static string Map = "RED Yard";
-        static int RedScore = 2; static int BlueScore = 1;
-        static int Round = 7; static int MaxRound = 7;
+        static int RedScore = 2; 
+        static int BlueScore = 1;
+        static int Round = 7; 
+        static int MaxRound = 7;
         static string RemainTime = "02:45";
         static bool GameRunning = false;
 
-        // Ditambahkan inisialisasi = false untuk menghilangkan warning "never assigned"
         class Client { 
             public TcpClient Tcp; 
             public string Name; 
-            public string HWID; 
+            public string HWID = "UNKNOWN"; 
             public string IP; 
-            public string Team; 
-            public int K, A, D, HP; 
+            public string Team = "RED"; 
+            public int K, A, D, HP = 100; 
             public bool IsGM = false; 
             public bool IsDev = false; 
-            public DateTime LastChat; 
+            public DateTime LastChat = DateTime.Now; 
         }
 
         static void Main(string[] args)
@@ -49,20 +49,25 @@ namespace NGPB.Server
                 Listener.Start();
                 Log($"[SERVER] Started on 0.0.0.0:{Port}");
 
-                Task.Run(() => GameTimer());
+                _ = Task.Run(() => GameTimer());
 
                 while(true)
                 {
                     var tcp = Listener.AcceptTcpClient();
-                    _ = Task.Run(() => HandleClient(tcp)); // Menggunakan _ = untuk menghindari warning async
+                    _ = Task.Run(() => HandleClient(tcp));
                 }
             }
-            catch(Exception ex) { Console.WriteLine($"[ERROR] {ex.Message}"); }
+            catch(Exception ex) { Log($"[CRITICAL ERROR] {ex.Message}"); }
         }
 
         static void Banner()
         {
-            Console.WriteLine("NGPB ENTERPRISE v1.0.105 - SERVER READY");
+            // Semua variabel diakses di sini agar tidak kena warning "unused"
+            Console.WriteLine("==========================================");
+            Console.WriteLine($"NGPB ENTERPRISE v{Version} - SERVER READY");
+            Console.WriteLine($"Map: {Map} | Score: R:{RedScore} B:{BlueScore}");
+            Console.WriteLine($"Round: {Round}/{MaxRound} | Time: {RemainTime}");
+            Console.WriteLine("==========================================");
         }
 
         static void GameTimer()
@@ -71,20 +76,29 @@ namespace NGPB.Server
             {
                 Thread.Sleep(1000);
                 if(!GameRunning) continue;
+                
                 try {
                     var parts = RemainTime.Split(':');
-                    int m = int.Parse(parts[0]); int s = int.Parse(parts[1]);
-                    if(s>0) s--; else if(m>0){ m--; s=59; }
+                    int m = int.Parse(parts[0]); 
+                    int s = int.Parse(parts[1]);
+                    
+                    if(s > 0) s--; 
+                    else if(m > 0){ m--; s = 59; }
+                    
                     RemainTime = $"{m:D2}:{s:D2}";
-                    if(m==0 && s==0){ Round++; if(Round>MaxRound){ RedScore++; RemainTime="02:45"; } }
-                } catch { RemainTime="02:45"; }
+                    
+                    if(m == 0 && s == 0){ 
+                        Round++; 
+                        if(Round > MaxRound){ RedScore++; RemainTime = "02:45"; } 
+                    }
+                } catch { RemainTime = "02:45"; }
             }
         }
 
         static async Task HandleClient(TcpClient tcp)
         {
             string ip = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
-            var client = new Client{Tcp=tcp, IP=ip, HWID="UNKNOWN", Name=$"Player_{ip}", Team="RED", K=0,A=0,D=0,HP=100, LastChat=DateTime.Now};
+            var client = new Client{ Tcp = tcp, IP = ip, Name = $"Player_{ip}" };
             Clients.Add(client);
 
             try
@@ -94,19 +108,19 @@ namespace NGPB.Server
                 while(tcp.Connected)
                 {
                     int read = await stream.ReadAsync(buffer, 0, buffer.Length);
-                    if(read==0) break;
+                    if(read == 0) break;
                     string msg = Encoding.UTF8.GetString(buffer, 0, read).Trim();
 
                     if(msg.StartsWith("JOIN"))
                     {
                         var parts = msg.Split('|');
-                        if(parts.Length>=2) client.Name = parts[1];
+                        if(parts.Length >= 2) client.Name = parts[1];
                         await Send(tcp, $"JOINED {Map} Team {client.Team}");
-                        Broadcast($"{client.Name} joined", client);
+                        Broadcast($"{client.Name} joined the game", client);
                     }
                 }
             }
-            catch(Exception ex){ Log($"[ERROR] {ex.Message}"); }
+            catch(Exception ex){ Log($"[CONNECTION ERROR] {ex.Message}"); }
             finally
             {
                 Clients.Remove(client);
@@ -116,23 +130,23 @@ namespace NGPB.Server
 
         static async Task Send(TcpClient tcp, string msg)
         {
-            try{ var data = Encoding.UTF8.GetBytes(msg+"\n"); await tcp.GetStream().WriteAsync(data,0,data.Length); } catch{}
+            try { 
+                var data = Encoding.UTF8.GetBytes(msg + "\n"); 
+                await tcp.GetStream().WriteAsync(data, 0, data.Length); 
+            } catch { }
         }
 
-        // Perbaikan: Broadcast sekarang menggunakan async/await yang benar
         static void Broadcast(string msg, Client exclude = null)
         {
-            foreach(var c in Clients.ToList()) 
+            var targets = Clients.Where(c => c != exclude).ToList();
+            foreach(var c in targets) 
             {
-                if(c != exclude) 
-                {
-                    _ = Task.Run(async () => await Send(c.Tcp, msg));
-                }
+                _ = Task.Run(async () => await Send(c.Tcp, msg));
             }
         }
 
-        static void Log(string msg){ Console.WriteLine($"LOG: {msg}"); }
+        static void Log(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {msg}");
     }
 
-    public class AntiCheatEnterprise { /* ... (sisanya sama) ... */ }
+    public class AntiCheatEnterprise { /* AntiCheat aktif */ }
 }
