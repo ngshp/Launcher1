@@ -95,6 +95,9 @@ jobs:
       - name: Setup Inno + Build Installer.exe
         shell: pwsh
         continue-on-error: true
+        env:
+          BUILD_VERSION: "1.0.105"
+          BUILD_NUMBER_RUN: ${{ github.run_number }}
         run: |
           try { choco install innosetup -y } catch { echo "Choco install warning: $_" }
           $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
