@@ -3,10 +3,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <AssemblyName>NGPB.Launcher</AssemblyName>
     <Version>3.6.0</Version>
+    <AssemblyTitle>PBNG Launcher</AssemblyTitle>
+    <ApplicationIcon>pbng_soldier_icon.ico</ApplicationIcon>
+    <PublishSingleFile>false</PublishSingleFile>
   </PropertyGroup>
   <ItemGroup>
-    <Resource Include="background_pbng.png" />
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
 </Project>
