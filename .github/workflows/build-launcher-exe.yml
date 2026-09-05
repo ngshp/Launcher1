@@ -16,10 +16,25 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Auto-Copy Icons
+        shell: pwsh
+        run: |
+          $sourceIcon = Get-ChildItem -Recurse -Filter "icon.ico" | Select-Object -First 1
+          if ($sourceIcon) {
+            $projects = Get-ChildItem -Recurse -Filter "*.csproj"
+            foreach ($proj in $projects) {
+              $destFolder = Split-Path $proj.FullName
+              Copy-Item $sourceIcon.FullName -Destination "$destFolder\icon.ico" -Force
+              Write-Host "Ikon ditempatkan di: $destFolder"
+            }
+          } else {
+            Write-Warning "File icon.ico tidak ditemukan di repositori!"
+          }
+
       - name: Publish Projects
         shell: pwsh
         run: |
-          $projects = @{"Launcher"="publish/launcher"; "Game"="publish/game"; "Server"="publish/server"}
+          $projects = @{"Launcher"="publish/launcher"; "GameClient"="publish/game"; "Server"="publish/server"}
           foreach ($key in $projects.Keys) {
             $projFile = Get-ChildItem -Recurse -Filter "*$key*.csproj" | Select-Object -First 1
             if ($projFile) {
@@ -31,37 +46,22 @@ jobs:
       - name: Prepare Installer Files
         shell: pwsh
         run: |
-          # Buat folder penampung
           mkdir publish/all -Force
-          
-          # Copy semua hasil publish ke folder all
-          Copy-Item publish/*/* -Destination publish/all/ -Force
-          
-          # Mencari file .ico di root atau folder Installer dan copy ke publish/all agar terbaca oleh Inno Setup
-          $iconFile = Get-ChildItem -Recurse -Filter "icon.ico" | Select-Object -First 1
-          if ($iconFile) {
-            Copy-Item $iconFile.FullName -Destination "publish/all/icon.ico" -Force
-            Write-Host "Ikon ditemukan dan disalin ke: publish/all/icon.ico"
-          }
+          Copy-Item publish/*/* -Destination publish/all/ -ErrorAction SilentlyContinue
 
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
           $issFile = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
-          
           if ($issFile) {
-            Write-Host "Memproses installer dengan file: $($issFile.FullName)"
             & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$($issFile.FullName)"
           } else {
-            Write-Error "Gagal: File .iss tidak ditemukan di repositori!"
+            Write-Error "Gagal: File .iss tidak ditemukan!"
           }
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-FULL-v1.0.105-FINAL
-          # Mengambil file installer hasil build (biasanya muncul di folder root atau lokasi script iss)
-          path: |
-            *.exe
-            Installer/*.exe
+          path: Installer/*.exe
