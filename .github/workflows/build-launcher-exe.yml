@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write # Wajib ada supaya bisa bikin Release otomatis
+
 jobs:
   build:
     runs-on: windows-latest
@@ -29,7 +32,6 @@ jobs:
           New-Item -ItemType Directory -Path "publish/all" -Force
           New-Item -ItemType Directory -Path "Output" -Force
           
-          # Ambil ikon kalau ada
           $iconFile = Get-ChildItem -Recurse -Filter "*.ico" | Select-Object -First 1
           if ($iconFile) { Copy-Item $iconFile.FullName -Destination "assets/logo.ico" -Force }
 
@@ -50,3 +52,16 @@ jobs:
         with:
           name: PBNG-INSTALLER-v1.0.${{ github.run_number }}
           path: Output/*.exe
+
+      - name: Auto-Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/heads/main')
+        with:
+          files: Output/*.exe
+          tag_name: v1.0.${{ github.run_number }}
+          name: NGPB Enterprise v1.0.${{ github.run_number }}
+          body: |
+            ## Update NGPB Enterprise v1.0.${{ github.run_number }}
+            - Build otomatis via GitHub Actions.
+            - Installer otomatis tersedia untuk di-download.
+          token: ${{ secrets.GITHUB_TOKEN }}
