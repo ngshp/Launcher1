@@ -6,13 +6,11 @@
     <Version>3.6.0</Version>
     <AssemblyTitle>PBNG Launcher</AssemblyTitle>
     <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
-    <PublishSingleFile>false</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.0" />
-    <PackageReference Include="DiscordRPC" Version="1.0.150" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="DiscordRPC" Version="1.0.0-b20190621" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,12 +18,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="pbng_icon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\version.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\server-status.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
