@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <NoWarn>$(NoWarn);CS0169;CS0649;CS0414;CS0168;CS0219;NETSDK1138</NoWarn>
   </PropertyGroup>
-
 </Project>
