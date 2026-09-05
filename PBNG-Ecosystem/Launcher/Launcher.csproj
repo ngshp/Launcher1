@@ -1,27 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>false</UseWindowsForms>
-    <AssemblyVersion>1.0.104.0</AssemblyVersion>
-    <FileVersion>1.0.104.0</FileVersion>
-    <Version>1.0.104</Version>
-    <ApplicationIcon>..\..\pbng_icon.ico</ApplicationIcon>
-    <Platforms>x64</Platforms>
+    <AssemblyName>NGPB.Launcher</AssemblyName>
+    <Version>3.6.0</Version>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
+    <Resource Include="background_pbng.png" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="pbng_icon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
