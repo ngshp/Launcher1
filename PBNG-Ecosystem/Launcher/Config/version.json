@@ -1,0 +1,14 @@
+{
+  "version": "3.6.1",
+  "launcher_exe_url": "https://cdn.pbng.id/launcher-v360/PBNG.Launcher.v360.exe",
+  "hero_url": "https://cdn.pbng.id/launcher-v360/hero.png",
+  "skin_zip_url": "https://cdn.pbng.id/launcher-v360/skins/tactical.zip",
+  "icons_zip_url": "https://cdn.pbng.id/launcher-v360/icons.zip",
+  "force_skin_update": false,
+  "maintenance": false,
+  "maintenance_message": "Server maintenance 02:00-04:00 WIB",
+  "changelog": "v3.6.1: Auto update launcher.exe + tampilan + MT + skin/UI/ico/PNG + online nyata + live status + login nyata",
+  "client_files": [
+    {"name":"PBNG Client","path":"PBNG.exe","url":"https://cdn.pbng.id/game/PBNG.exe","hash":""}
+  ]
+}
