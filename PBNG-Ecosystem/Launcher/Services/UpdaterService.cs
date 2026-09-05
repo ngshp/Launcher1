@@ -1,111 +1,81 @@
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Reflection;
-using System.Threading.Tasks;
+using System; using System.IO; using System.Net.Http; using System.Text.Json; using System.Threading.Tasks; using System.Diagnostics;
 
 namespace PBNG.Launcher.Services
 {
-    public class UpdaterService
+    public class AutoUpdater
     {
-        private const string Repo = "ngshp/Launcher1";
-        private static readonly HttpClient http = new HttpClient();
-
-        static UpdaterService()
+        private readonly HttpClient http = new HttpClient();
+        public string VersionUrl = "https://cdn.pbng.id/launcher-v360/version.json";
+        public string CurrentVersion = "3.6.0";
+        
+        public async Task<UpdateInfo> CheckAsync(Action<string> log)
         {
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("PBNG-Launcher/1.0.104");
-            http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.v3+json");
-            http.Timeout = TimeSpan.FromSeconds(15);
+            log?.Invoke("Checking auto update...");
+            try {
+                var json = await http.GetStringAsync(VersionUrl);
+                var info = JsonSerializer.Deserialize<UpdateInfo>(json);
+                log?.Invoke($"Server: v{info.version} | Local: v{CurrentVersion} | MT:{info.maintenance}");
+                return info;
+            } catch(Exception ex) { log?.Invoke($"Check failed: {ex.Message}"); return null; }
         }
 
-        public record GitHubAsset(string name, string browser_download_url, long size);
-        public record GitHubRelease(string tag_name, string name, GitHubAsset[] assets, string body);
-
-        public async Task<(bool hasUpdate, string latestVersion, string downloadUrl, long size)> CheckAsync()
+        public async Task DoUpdateAsync(UpdateInfo info, Action<string,int> progress)
         {
-            try
+            if(info == null) return;
+            // 1. Auto update launcher.exe
+            if(info.version != CurrentVersion && !string.IsNullOrEmpty(info.launcher_exe_url))
             {
-                var release = await http.GetFromJsonAsync<GitHubRelease>($"https://api.github.com/repos/{Repo}/releases/latest");
-                if (release == null) return (false, "", "", 0);
-
-                var latest = release.tag_name.TrimStart('v');
-                var current = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.104";
-
-                if (Version.TryParse(latest, out var vLatest) && Version.TryParse(current, out var vCurrent))
+                progress?.Invoke("Downloading launcher.exe update...", 10);
+                await DownloadAsync(info.launcher_exe_url, "PBNG.Launcher.v360.new.exe");
+                File.WriteAllText("update_launcher.pending", info.version);
+            }
+            // 2. Auto update tampilan / skin / UI / ico / PNG
+            if(info.force_skin_update || info.skin_zip_url != null)
+            {
+                progress?.Invoke("Updating tampilan & skin/UI...", 30);
+                if(!string.IsNullOrEmpty(info.hero_url)) await DownloadAsync(info.hero_url, "hero.png.new");
+                if(!string.IsNullOrEmpty(info.skin_zip_url)) await DownloadAsync(info.skin_zip_url, "skin.zip");
+                if(!string.IsNullOrEmpty(info.icons_zip_url)) await DownloadAsync(info.icons_zip_url, "icons.zip");
+            }
+            // 3. Auto update file client game
+            if(info.client_files != null)
+            {
+                foreach(var file in info.client_files)
                 {
-                    if (vLatest <= vCurrent) return (false, latest, "", 0);
+                    progress?.Invoke($"Updating game file {file.name}...", 60);
+                    await DownloadAsync(file.url, $"Game/{file.path}.new");
                 }
-                else if (latest == current) return (false, latest, "", 0);
-
-                var asset = release.assets.FirstOrDefault(a => a.name.Contains("Setup") && a.name.EndsWith(".exe"))
-                         ?? release.assets.FirstOrDefault(a => a.name.EndsWith(".exe"))
-                         ?? release.assets.FirstOrDefault(a => a.name.EndsWith(".zip"));
-
-                return (true, latest, asset?.browser_download_url ?? "", asset?.size ?? 0);
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Update check fail: {ex.Message}");
-                return (false, "", "", 0);
-            }
+            // 4. Auto update MT
+            if(info.maintenance) File.WriteAllText("maintenance.flag", info.maintenance_message);
+            else if(File.Exists("maintenance.flag")) File.Delete("maintenance.flag");
+
+            progress?.Invoke("Update ready! Restarting...", 100);
+            await Task.Delay(1000);
+            Process.Start("PBNG.Launcher.v360.exe", "--apply-update");
+            Environment.Exit(0);
         }
 
-        public async Task DownloadAndInstallAsync(string url, Action<int>? progressCallback = null)
+        private async Task DownloadAsync(string url, string dest)
         {
-            try
-            {
-                var temp = Path.Combine(Path.GetTempPath(), $"PBNG-Setup-v{Guid.NewGuid():N}.exe");
-                
-                using var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-                response.EnsureSuccessStatusCode();
-                
-                var total = response.Content.Headers.ContentLength ?? -1L;
-                var canReport = total != -1 && progressCallback != null;
-                
-                using var contentStream = await response.Content.ReadAsStreamAsync();
-                using var fileStream = new FileStream(temp, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
-                
-                var buffer = new byte[8192];
-                long totalRead = 0;
-                int read;
-                
-                while ((read = await contentStream.ReadAsync(buffer, 0, buffer.Length)) != 0)
-                {
-                    await fileStream.WriteAsync(buffer, 0, read);
-                    totalRead += read;
-                    if (canReport)
-                    {
-                        var pct = (int)((totalRead * 100) / total);
-                        progressCallback?.Invoke(pct);
-                    }
-                }
-
-                Process.Start(new ProcessStartInfo 
-                { 
-                    FileName = temp, 
-                    Arguments = "/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS", 
-                    UseShellExecute = true,
-                    Verb = "runas"
-                });
-                
-                System.Windows.Application.Current?.Shutdown();
-                Environment.Exit(0);
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show($"Update gagal: {ex.Message}\n\nDownload manual di https://github.com/ngshp/Launcher1/releases", "PBNG Launcher - Update Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                Process.Start(new ProcessStartInfo { FileName = "https://github.com/ngshp/Launcher1/releases", UseShellExecute = true });
-            }
+            var bytes = await http.GetByteArrayAsync(url);
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(dest)) ?? ".");
+            await File.WriteAllBytesAsync(dest, bytes);
         }
 
-        public void OpenReleasesPage()
+        public class UpdateInfo
         {
-            Process.Start(new ProcessStartInfo { FileName = "https://github.com/ngshp/Launcher1/releases", UseShellExecute = true });
+            public string version {get;set;}
+            public string launcher_exe_url {get;set;}
+            public string hero_url {get;set;}
+            public string skin_zip_url {get;set;}
+            public string icons_zip_url {get;set;}
+            public bool force_skin_update {get;set;}
+            public bool maintenance {get;set;}
+            public string maintenance_message {get;set;}
+            public GameFile[] client_files {get;set;}
+            public string changelog {get;set;}
         }
+        public class GameFile { public string name {get;set;} public string path {get;set;} public string url {get;set;} public string hash {get;set;} }
     }
-
-    public class UpdateService : UpdaterService { }
 }
