@@ -9,10 +9,10 @@ OutputBaseFilename=PBNG-Setup-Installer-v1.0.105
 Compression=lzma2/ultra
 SolidCompression=yes
 ; Ikon menggunakan path yang benar (sudah dipastikan di folder Resources)
-SetupIconFile=..\Launcher\Resources\icon.ico
+SetupIconFile=..\Launcher\Resources\1788539375605.jpg
 ; WizardSmallImageFile dinonaktifkan sementara karena kendala ukuran file (file too large)
 ; Silakan aktifkan kembali jika sudah di-resize ke 55x55 pixel
-; WizardSmallImageFile=..\Launcher\Resources\logo.bmp
+; WizardSmallImageFile=..\Launcher\Resources\1788539434100.jpg
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
