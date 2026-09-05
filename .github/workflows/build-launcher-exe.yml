@@ -1,4 +1,4 @@
-name: Build FULL 4 Files - Launcher + Game + Server + Installer - v1.0.105
+name: Build FULL
 
 on:
   push:
@@ -20,16 +20,15 @@ jobs:
         shell: pwsh
         run: |
           # Cari file PNG bos
-          $sourceIcon = Get-ChildItem -Recurse -Filter "*.png" | Where-Object { $_.Name -like "*ea9de755*" } | Select-Object -First 1
-          
-          if ($sourceIcon) {
-            $projects = Get-ChildItem -Recurse -Filter "*.csproj"
-            foreach ($proj in $projects) {
-              $destFolder = Split-Path $proj.FullName
-              # Gunakan ImageMagick (sudah ada di windows-latest) untuk convert
-              & magick convert "$($sourceIcon.FullName)" -define icon:auto-resize=256,128,64,48,32,16 "$($destFolder)\icon.ico"
-              Write-Host "Ikon berhasil dikonversi ke ICO di: $destFolder"
-            }
+          $pngFile = Get-ChildItem -Recurse -Filter "ea9de755-8f6a-4bdf-9aa9-61ad9d79e0e0.png" | Select-Object -First 1
+          if ($pngFile) {
+            # Convert ke .ico menggunakan .NET System.Drawing
+            Add-Type -AssemblyName System.Drawing
+            $img = [System.Drawing.Image]::FromFile($pngFile.FullName)
+            $icoPath = Join-Path $pngFile.DirectoryName "installer_icon.ico"
+            $img.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
+            $img.Dispose()
+            Write-Host "Ikon berhasil dibuat di: $icoPath"
           }
 
       - name: Publish Projects
@@ -43,23 +42,16 @@ jobs:
             }
           }
 
-      - name: Prepare Installer Files
-        shell: pwsh
-        run: |
-          mkdir publish/all -Force
-          Copy-Item publish/*/* -Destination publish/all/ -ErrorAction SilentlyContinue
-
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
           $issFile = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
-          if ($issFile) {
-            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$($issFile.FullName)"
-          }
+          # Jalankan Inno Setup
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$($issFile.FullName)"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-FULL-v1.0.105-FINAL
+          name: PBNG-INSTALLER
           path: Installer/*.exe
