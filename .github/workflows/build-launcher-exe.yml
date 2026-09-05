@@ -16,40 +16,37 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Auto-Convert PNG to ICO
+      - name: Siapkan Ikon dan Folder
         shell: pwsh
         run: |
-          $pngFile = Get-ChildItem -Recurse -Filter "ea9de755-8f6a-4bdf-9aa9-61ad9d79e0e0.png" | Select-Object -First 1
+          # 1. Buat folder assets
+          New-Item -ItemType Directory -Path "assets" -Force
+          
+          # 2. Cari file png (yang ada kodenya itu)
+          $pngFile = Get-ChildItem -Recurse -Filter "*.png" | Where-Object { $_.Name -like "*ea9de755*" } | Select-Object -First 1
+          
           if ($pngFile) {
-            Add-Type -AssemblyName System.Drawing
-            $img = [System.Drawing.Image]::FromFile($pngFile.FullName)
-            # Simpan di folder Installer agar mudah diakses .iss
-            $icoPath = "Installer/installer_icon.ico"
-            $img.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
-            $img.Dispose()
-            Write-Host "Ikon berhasil dibuat di: $icoPath"
+            # Copy dan rename ke assets/logo.ico (huruf kecil semua)
+            Copy-Item $pngFile.FullName -Destination "assets/logo.ico" -Force
+            Write-Host "Ikon sukses disiapkan di: assets/logo.ico"
           }
+          
+          # 3. Pastikan folder output ada
+          New-Item -ItemType Directory -Path "Output" -Force
 
       - name: Publish Projects
         shell: pwsh
         run: |
-          $projects = @{"Launcher"="publish/all"; "GameClient"="publish/all"; "Server"="publish/all"}
-          foreach ($key in $projects.Keys) {
-            $projFile = Get-ChildItem -Recurse -Filter "*$key*.csproj" | Select-Object -First 1
-            if ($projFile) {
-              dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o $projects[$key]
-            }
-          }
+          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/all
 
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
-          $issFile = "Installer/NGPB.Installer.iss"
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$issFile"
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "installer.iss"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-INSTALLER
-          path: Installer/Output/*.exe
+          path: Output/*.exe
