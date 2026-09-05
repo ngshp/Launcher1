@@ -8,8 +8,6 @@ OutputDir=.
 OutputBaseFilename=PBNG-Setup-Installer-v1.0.105
 Compression=lzma2/ultra
 SolidCompression=yes
-; Jika ikon tidak ketemu, baris di bawah ini bisa dihapus atau dipastikan path-nya benar
-SetupIconFile=..\Launcher\Resources\1788539434100.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -18,7 +16,6 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Ini akan memasukkan semua hasil build (ngpb.exe dan file lainnya) ke folder instalasi
 Source: "..\publish\all\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdir
 
 [Icons]
