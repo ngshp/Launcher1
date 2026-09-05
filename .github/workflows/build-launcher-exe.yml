@@ -1,5 +1,4 @@
 name: Build FULL
-
 on:
   push:
     branches: [ main ]
@@ -16,33 +15,26 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Siapkan Ikon dan Folder
+      - name: Siapkan Folder dan Ikon
         shell: pwsh
         run: |
-          # 1. Buat folder assets
           New-Item -ItemType Directory -Path "assets" -Force
-          
-          # 2. Cari file png (yang ada kodenya itu)
-          $pngFile = Get-ChildItem -Recurse -Filter "*.png" | Where-Object { $_.Name -like "*ea9de755*" } | Select-Object -First 1
-          
+          $pngFile = Get-ChildItem -Recurse -Filter "*.png" | Where-Object { $_.FullName -like "*ea9de755*" } | Select-Object -First 1
           if ($pngFile) {
-            # Copy dan rename ke assets/logo.ico (huruf kecil semua)
             Copy-Item $pngFile.FullName -Destination "assets/logo.ico" -Force
-            Write-Host "Ikon sukses disiapkan di: assets/logo.ico"
           }
-          
-          # 3. Pastikan folder output ada
-          New-Item -ItemType Directory -Path "Output" -Force
 
       - name: Publish Projects
         shell: pwsh
         run: |
-          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/all
+          # Kita publish ke folder 'publish' di root
+          dotnet publish Launcher/Launcher.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/all
 
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
+          # Pastikan file installer.iss ada di ROOT
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "installer.iss"
 
       - name: Upload Artifacts
