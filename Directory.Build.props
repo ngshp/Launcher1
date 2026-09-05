@@ -1,6 +1,5 @@
 <Project>
   <PropertyGroup>
-    <!-- Mencegah semua pesan kuning muncul di log build -->
     <NoWarn>$(NoWarn);CS0168;CS0169;CS0219;CS0414;CS0649;NETSDK1138</NoWarn>
   </PropertyGroup>
 </Project>
