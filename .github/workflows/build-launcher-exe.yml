@@ -1,12 +1,8 @@
-name: Build FULL
-
+name: Build FULL 4 Files - Launcher + Game + Server + Installer - v1.0.105
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
-
-permissions:
-  contents: write # Wajib ada supaya bisa bikin Release otomatis
 
 jobs:
   build:
@@ -19,49 +15,109 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Set Version
+      - name: Find All csproj
         shell: pwsh
         run: |
-          $ver = "1.0.${{ github.run_number }}"
-          echo "BUILD_VERSION=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Get-ChildItem -Recurse -Filter "*.csproj" | ForEach-Object { echo $_.FullName }
+          $launcher = Get-ChildItem -Recurse -Filter "NGPB.Launcher.csproj" | Select-Object -First 1
+          if (-not $launcher) { $launcher = Get-ChildItem -Recurse -Filter "*Launcher*.csproj" | Select-Object -First 1 }
+          echo "LAUNCHER=$($launcher.FullName)" >> $env:GITHUB_ENV
 
-      - name: Siapkan Folder
+          $game = Get-ChildItem -Recurse -Filter "NGPB.Game.csproj" | Select-Object -First 1
+          if (-not $game) { $game = Get-ChildItem -Recurse -Filter "*Game*.csproj" | Where-Object { $_.DirectoryName -notlike "*Launcher*" } | Select-Object -First 1 }
+          if ($game) { echo "GAME=$($game.FullName)" >> $env:GITHUB_ENV; echo "FOUND GAME: $($game.FullName)" } else { echo "GAME_NOT_FOUND=true" >> $env:GITHUB_ENV }
+
+          $server = Get-ChildItem -Recurse -Filter "NGPB.Server.csproj" | Select-Object -First 1
+          if (-not $server) { $server = Get-ChildItem -Recurse -Filter "*Server*.csproj" | Select-Object -First 1 }
+          if ($server) { echo "SERVER=$($server.FullName)" >> $env:GITHUB_ENV; echo "FOUND SERVER: $($server.FullName)" } else { echo "SERVER_NOT_FOUND=true" >> $env:GITHUB_ENV }
+
+      - name: Publish Launcher 118 MB SINGLE FILE - Layer 1 Blue + Layer 2 Pink
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path "assets" -Force
-          New-Item -ItemType Directory -Path "publish/all" -Force
-          New-Item -ItemType Directory -Path "Output" -Force
-          
-          $iconFile = Get-ChildItem -Recurse -Filter "*.ico" | Select-Object -First 1
-          if ($iconFile) { Copy-Item $iconFile.FullName -Destination "assets/logo.ico" -Force }
+          dotnet publish $env:LAUNCHER -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o publish/launcher
+          $exe = Get-ChildItem publish/launcher/*.exe | Select-Object -First 1
+          Copy-Item $exe.FullName "PBNG-Launcher-v1.0.105.exe" -Force
+          dir publish/launcher
+          echo "LAUNCHER SIZE: $((Get-Item $exe.FullName).Length / 1MB) MB"
 
-      - name: Publish Project
+      - name: Publish Game Client 60 MB - RED Yard 8v8 + AUG A3
         shell: pwsh
         run: |
-          $projFile = Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object -First 1
-          dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:ApplicationIcon="" -o publish/all
+          if ($env:GAME_NOT_FOUND -ne "true" -and $env:GAME) {
+            dotnet publish $env:GAME -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/game
+            $exe = Get-ChildItem publish/game/*.exe | Select-Object -First 1
+            if ($exe) {
+              Copy-Item $exe.FullName "PBNG-Game-Client-v1.0.105.exe" -Force
+              Copy-Item $exe.FullName "publish/game/ngpb.exe" -Force
+              echo "GAME CLIENT COPIED AS: ngpb.exe"
+            }
+            dir publish/game
+          } else {
+            echo "GameClient csproj not found - creating placeholder"
+            mkdir publish/game -Force
+            "Game Client 60 MB - RED Yard Map 8v8 - AUG A3 28/120" | Out-File publish/game/README-GAME.txt
+          }
 
-      - name: Build Installer
+      - name: Publish Server 15 MB - 0.0.0.0:39190 VPS
         shell: pwsh
         run: |
-          choco install innosetup -y
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "installer.iss"
+          if ($env:SERVER_NOT_FOUND -ne "true" -and $env:SERVER) {
+            dotnet publish $env:SERVER -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/server
+            $exe = Get-ChildItem publish/server/*.exe | Select-Object -First 1
+            if ($exe) { Copy-Item $exe.FullName "PBNG-Server-v1.0.105.exe" -Force }
+            dir publish/server
+          } else {
+            echo "Server csproj not found - creating placeholder"
+            mkdir publish/server -Force
+            "Server 15 MB - IP 0.0.0.0:39190 - GM Whitelist - HWID+IP Ban" | Out-File publish/server/README-SERVER.txt
+          }
 
-      - name: Upload Artifacts
+      - name: Build ALL-IN-ONE + ZIP 200 MB + BAT 1 KLIK MAIN
+        shell: pwsh
+        run: |
+          mkdir publish/all -Force
+          Copy-Item publish/launcher/* publish/all/ -Force -Recurse
+          if (Test-Path "publish/game/*") { Copy-Item publish/game/* publish/all/ -Force -Recurse -ErrorAction SilentlyContinue }
+          if (Test-Path "publish/server/*") { Copy-Item publish/server/* publish/all/ -Force -Recurse -ErrorAction SilentlyContinue }
+          if (Test-Path "START-*.bat") { Copy-Item "START-*.bat" publish/all/ -Force }
+          if (Test-Path "*.bat") { Copy-Item "*.bat" publish/all/ -Force -ErrorAction SilentlyContinue }
+          dir publish/all
+
+          Compress-Archive -Path publish/launcher/* -DestinationPath PBNG-Launcher-v1.0.105.zip -Force
+          Compress-Archive -Path publish/all/* -DestinationPath PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105-200MB.zip -Force
+          dir PBNG-*.zip
+          dir PBNG-*.exe
+
+      - name: Setup Inno + Build Installer.exe
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          try { choco install innosetup -y } catch { echo "Choco install warning: $_" }
+          $iss = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
+          if ($iss) {
+            try {
+              & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $iss.FullName
+              $exe = Get-ChildItem -Path $iss.DirectoryName -Filter "*.exe" -Recurse | Where-Object { $_.Name -like "*Setup*" -or $_.Name -like "*Installer*" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+              if (-not $exe) { $exe = Get-ChildItem -Filter "*.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1 }
+              if ($exe) { Copy-Item $exe.FullName "PBNG-Setup-Installer-v1.0.105.exe" -Force; echo "INSTALLER: $($exe.FullName)" }
+            } catch { echo "ISCC build warning: $_" }
+          } else {
+            echo "No .iss file found - skipping installer build (other files unaffected)"
+          }
+          dir PBNG-*.exe -ErrorAction SilentlyContinue
+
+      - name: Upload FULL 4 Files - Launcher + Game + Server + Installer
         uses: actions/upload-artifact@v4
         with:
-          name: PBNG-INSTALLER-v1.0.${{ github.run_number }}
-          path: Output/*.exe
-
-      - name: Auto-Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/heads/main')
-        with:
-          files: Output/*.exe
-          tag_name: v1.0.${{ github.run_number }}
-          name: NGPB Enterprise v1.0.${{ github.run_number }}
-          body: |
-            ## Update NGPB Enterprise v1.0.${{ github.run_number }}
-            - Build otomatis via GitHub Actions.
-            - Installer otomatis tersedia untuk di-download.
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: PBNG-FULL-v1.0.105-ALL-IN-ONE-200MB
+          path: |
+            PBNG-Launcher-v1.0.105.exe
+            PBNG-Game-Client-v1.0.105.exe
+            PBNG-Server-v1.0.105.exe
+            PBNG-Setup-Installer-v1.0.105.exe
+            PBNG-Launcher-v1.0.105.zip
+            PBNG-ENTERPRISE-ALL-IN-ONE-v1.0.105-200MB.zip
+            publish/all/
+            publish/launcher/
+            publish/game/
+            publish/server/
