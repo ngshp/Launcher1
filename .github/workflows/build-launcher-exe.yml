@@ -16,19 +16,34 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Auto-Copy Icons
+      - name: Auto-Convert and Copy Icons
         shell: pwsh
         run: |
-          $sourceIcon = Get-ChildItem -Recurse -Filter "icon.ico" | Select-Object -First 1
+          # Cari icon.png atau icon.ico
+          $sourceIcon = Get-ChildItem -Recurse -Filter "icon.png" | Select-Object -First 1
+          if (-not $sourceIcon) { $sourceIcon = Get-ChildItem -Recurse -Filter "icon.ico" | Select-Object -First 1 }
+          
           if ($sourceIcon) {
             $projects = Get-ChildItem -Recurse -Filter "*.csproj"
             foreach ($proj in $projects) {
               $destFolder = Split-Path $proj.FullName
-              Copy-Item $sourceIcon.FullName -Destination "$destFolder\icon.ico" -Force
-              Write-Host "Ikon ditempatkan di: $destFolder"
+              $destIcon = "$destFolder\icon.ico"
+              
+              if ($sourceIcon.Extension -eq ".png") {
+                Write-Host "Converting $($sourceIcon.Name) to ICO for $destFolder..."
+                Add-Type -AssemblyName System.Drawing
+                $img = [System.Drawing.Image]::FromFile($sourceIcon.FullName)
+                # Resize ke 256x256 agar kualitas ikon tajam
+                $bitmap = [System.Drawing.Bitmap]::new($img, 256, 256)
+                $bitmap.Save($destIcon, [System.Drawing.Imaging.ImageFormat]::Icon)
+                $img.Dispose()
+                $bitmap.Dispose()
+              } else {
+                Copy-Item $sourceIcon.FullName -Destination $destIcon -Force
+              }
             }
           } else {
-            Write-Warning "File icon.ico tidak ditemukan di repositori!"
+            Write-Warning "File icon.png atau icon.ico tidak ditemukan!"
           }
 
       - name: Publish Projects
