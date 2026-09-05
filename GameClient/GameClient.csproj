@@ -6,6 +6,6 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Ini yang bikin aplikasi bos punya ikon -->
-    <ApplicationIcon>icon.png</ApplicationIcon>
+    
   </PropertyGroup>
 </Project>
