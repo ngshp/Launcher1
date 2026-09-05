@@ -19,13 +19,12 @@ jobs:
       - name: Auto-Convert PNG to ICO
         shell: pwsh
         run: |
-          # Cari file PNG bos
           $pngFile = Get-ChildItem -Recurse -Filter "ea9de755-8f6a-4bdf-9aa9-61ad9d79e0e0.png" | Select-Object -First 1
           if ($pngFile) {
-            # Convert ke .ico menggunakan .NET System.Drawing
             Add-Type -AssemblyName System.Drawing
             $img = [System.Drawing.Image]::FromFile($pngFile.FullName)
-            $icoPath = Join-Path $pngFile.DirectoryName "installer_icon.ico"
+            # Simpan di folder Installer agar mudah diakses .iss
+            $icoPath = "Installer/installer_icon.ico"
             $img.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
             $img.Dispose()
             Write-Host "Ikon berhasil dibuat di: $icoPath"
@@ -34,7 +33,7 @@ jobs:
       - name: Publish Projects
         shell: pwsh
         run: |
-          $projects = @{"Launcher"="publish/launcher"; "GameClient"="publish/game"; "Server"="publish/server"}
+          $projects = @{"Launcher"="publish/all"; "GameClient"="publish/all"; "Server"="publish/all"}
           foreach ($key in $projects.Keys) {
             $projFile = Get-ChildItem -Recurse -Filter "*$key*.csproj" | Select-Object -First 1
             if ($projFile) {
@@ -46,12 +45,11 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup -y
-          $issFile = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
-          # Jalankan Inno Setup
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$($issFile.FullName)"
+          $issFile = "Installer/NGPB.Installer.iss"
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$issFile"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-INSTALLER
-          path: Installer/*.exe
+          path: Installer/Output/*.exe
