@@ -16,22 +16,26 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Siapkan Folder dan Ikon
+      - name: Siapkan Folder
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path "assets" -Force
-          $pngFile = Get-ChildItem -Recurse -Filter "*.png" | Where-Object { $_.FullName -like "*ea9de755*" } | Select-Object -First 1
-          if ($pngFile) {
-            Copy-Item $pngFile.FullName -Destination "assets/logo.ico" -Force
-          }
           New-Item -ItemType Directory -Path "Output" -Force
           New-Item -ItemType Directory -Path "publish/all" -Force
+          
+          $pngFile = Get-ChildItem -Recurse -Filter "*.png" | Where-Object { $_.FullName -like "*ea9de755*" } | Select-Object -First 1
+          if ($pngFile) { Copy-Item $pngFile.FullName -Destination "assets/logo.ico" -Force }
 
       - name: Publish Project
         shell: pwsh
         run: |
           $projFile = Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object -First 1
-          dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/all
+          dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o ./temp_output
+          
+          # Pindahkan semua hasil build ke folder publish/all
+          Get-ChildItem -Path ./temp_output -File | Copy-Item -Destination "publish/all" -Force
+          Write-Host "File yang berhasil di-publish:"
+          Get-ChildItem -Path "publish/all"
 
       - name: Build Installer
         shell: pwsh
