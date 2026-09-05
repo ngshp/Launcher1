@@ -4,22 +4,18 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Version>3.6.0</Version>
-    <AssemblyVersion>3.6.0.0</AssemblyVersion>
-    <FileVersion>3.6.0.0</FileVersion>
     <AssemblyTitle>PBNG Launcher</AssemblyTitle>
-    <AssemblyDescription>Point Blank Next Generation - Auto Update PRO</AssemblyDescription>
     <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
     <PublishSingleFile>false</PublishSingleFile>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.0" />
+    <PackageReference Include="DiscordRPC" Version="1.0.150" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- AUTO UPDATE HERO + ICON + PNG + SKIN/UI -->
     <None Update="hero.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
