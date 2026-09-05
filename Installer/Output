@@ -1,0 +1,7 @@
+      - name: Prepare Installer Files
+        shell: pwsh
+        run: |
+          # Buat folder khusus untuk menampung file yang akan di-install
+          New-Item -ItemType Directory -Path "Installer/AppFiles" -Force
+          # Copy semua hasil publish ke dalam folder AppFiles
+          Get-ChildItem -Path "publish/*" -Recurse | Copy-Item -Destination "Installer/AppFiles" -Force
