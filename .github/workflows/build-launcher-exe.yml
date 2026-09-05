@@ -21,27 +21,29 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path "assets" -Force
           New-Item -ItemType Directory -Path "publish/all" -Force
-          $pngFile = Get-ChildItem -Recurse -Filter "*.png" | Where-Object { $_.FullName -like "*ea9de755*" } | Select-Object -First 1
-          if ($pngFile) { Copy-Item $pngFile.FullName -Destination "assets/logo.ico" -Force }
+          New-Item -ItemType Directory -Path "Output" -Force
+          
+          # Cari file ikon .png atau .ico mana saja untuk aset installer
+          $iconFile = Get-ChildItem -Recurse -Filter "*.ico" | Select-Object -First 1
+          if (-not $iconFile) {
+            $pngFile = Get-ChildItem -Recurse -Filter "*.png" | Select-Object -First 1
+            if ($pngFile) { Copy-Item $pngFile.FullName -Destination "assets/logo.ico" -Force }
+          } else {
+            Copy-Item $iconFile.FullName -Destination "assets/logo.ico" -Force
+          }
 
       - name: Publish Project
         shell: pwsh
         run: |
-          # Cari file csproj
           $projFile = Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object -First 1
           
-          # Publish dengan mematikan ApplicationIcon secara paksa agar tidak error
-          dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:ApplicationIcon="" -o ./publish/all
-          
-          # Cek hasil
-          Write-Host "Isi folder publish/all:"
-          Get-ChildItem -Path publish/all
+          # Parameter /p:ApplicationIcon= dikosongkan untuk override .csproj
+          dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:ApplicationIcon="" /p:GenerateRuntimeConfigurationFiles=true -o publish/all
 
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
-          # Panggil ISCC dengan path absolut agar tidak bingung
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "installer.iss"
 
       - name: Upload Artifacts
