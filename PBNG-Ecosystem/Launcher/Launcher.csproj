@@ -4,21 +4,8 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Version>3.6.0</Version>
-    <AssemblyTitle>PBNG Launcher</AssemblyTitle>
-    <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="DiscordRPC" Version="1.0.0-b20190621" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="hero.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="pbng_icon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>
