@@ -48,8 +48,12 @@ jobs:
             $exe = Get-ChildItem publish/game/*.exe | Select-Object -First 1
             if ($exe) {
               Copy-Item $exe.FullName "PBNG-Game-Client-v1.0.105.exe" -Force
-              Copy-Item $exe.FullName "publish/game/ngpb.exe" -Force
-              echo "GAME CLIENT COPIED AS: ngpb.exe"
+              if ($exe.Name -ne "ngpb.exe") {
+                Copy-Item $exe.FullName "publish/game/ngpb.exe" -Force
+                echo "GAME CLIENT COPIED AS: ngpb.exe"
+              } else {
+                echo "GAME CLIENT ALREADY NAMED: ngpb.exe"
+              }
             }
             dir publish/game
           } else {
