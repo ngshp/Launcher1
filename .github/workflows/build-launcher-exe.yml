@@ -1,4 +1,5 @@
 name: Build FULL
+
 on:
   push:
     branches: [ main ]
@@ -23,18 +24,19 @@ jobs:
           if ($pngFile) {
             Copy-Item $pngFile.FullName -Destination "assets/logo.ico" -Force
           }
+          New-Item -ItemType Directory -Path "Output" -Force
+          New-Item -ItemType Directory -Path "publish/all" -Force
 
-      - name: Publish Projects
+      - name: Publish Project
         shell: pwsh
         run: |
-          # Kita publish ke folder 'publish' di root
-          dotnet publish Launcher/Launcher.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/all
+          $projFile = Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object -First 1
+          dotnet publish "$($projFile.FullName)" -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o publish/all
 
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
-          # Pastikan file installer.iss ada di ROOT
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "installer.iss"
 
       - name: Upload Artifacts
