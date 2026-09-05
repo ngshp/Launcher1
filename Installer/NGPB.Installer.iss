@@ -13,7 +13,7 @@ Compression=lzma2/ultra
 SolidCompression=yes
 
 ; Ikon Installer
-SetupIconFile=icon.ico
+SetupIconFile=ea9de755-8f6a-4bdf-9aa9-61ad9d79e0e0.png
 
 ; Pengaturan Tampilan
 WizardStyle=modern
@@ -34,9 +34,9 @@ Source: "icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 ; Shortcut di Start Menu
-Name: "{group}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\icon.ico"
+Name: "{group}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\ea9de755-8f6a-4bdf-9aa9-61ad9d79e0e0.png   "
 ; Shortcut di Desktop
-Name: "{commondesktop}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\icon.ico"; Tasks: desktopicon
+Name: "{commondesktop}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\ea9de755-8f6a-4bdf-9aa9-61ad9d79e0e0.png   "; Tasks: desktopicon
 
 [Run]
 ; Auto-jalankan aplikasi setelah install
