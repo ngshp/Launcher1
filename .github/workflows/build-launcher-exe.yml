@@ -31,23 +31,37 @@ jobs:
       - name: Prepare Installer Files
         shell: pwsh
         run: |
+          # Buat folder penampung
           mkdir publish/all -Force
-          Copy-Item publish/*/* -Destination publish/all/ -ErrorAction SilentlyContinue
+          
+          # Copy semua hasil publish ke folder all
+          Copy-Item publish/*/* -Destination publish/all/ -Force
+          
+          # Mencari file .ico di root atau folder Installer dan copy ke publish/all agar terbaca oleh Inno Setup
+          $iconFile = Get-ChildItem -Recurse -Filter "icon.ico" | Select-Object -First 1
+          if ($iconFile) {
+            Copy-Item $iconFile.FullName -Destination "publish/all/icon.ico" -Force
+            Write-Host "Ikon ditemukan dan disalin ke: publish/all/icon.ico"
+          }
 
       - name: Build Installer
         shell: pwsh
         run: |
           choco install innosetup -y
           $issFile = Get-ChildItem -Recurse -Filter "*.iss" | Select-Object -First 1
+          
           if ($issFile) {
+            Write-Host "Memproses installer dengan file: $($issFile.FullName)"
             & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$($issFile.FullName)"
           } else {
-            Write-Error "Gagal: File .iss tidak ditemukan!"
+            Write-Error "Gagal: File .iss tidak ditemukan di repositori!"
           }
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-FULL-v1.0.105-FINAL
-          # Hanya ambil file .exe yang ada di folder Installer
-          path: Installer/*.exe
+          # Mengambil file installer hasil build (biasanya muncul di folder root atau lokasi script iss)
+          path: |
+            *.exe
+            Installer/*.exe
