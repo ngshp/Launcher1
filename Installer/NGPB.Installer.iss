@@ -16,7 +16,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "..\publish\all\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdir
+Source: "..\publish\all\*"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"
