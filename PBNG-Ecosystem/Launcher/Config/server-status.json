@@ -1,0 +1,10 @@
+{
+  "status": "ONLINE",
+  "online": 1024,
+  "max": 3000,
+  "maintenance": false,
+  "message": "Server normal - Auto update active",
+  "server_version": "1.0.105",
+  "login_enabled": true,
+  "register_enabled": true
+}
