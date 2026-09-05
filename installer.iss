@@ -10,13 +10,16 @@ Compression=lzma2/ultra
 SolidCompression=yes
 SetupIconFile=assets\logo.ico
 
+[Tasks]
+; Baris ini yang tadi kurang bos!
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
 [Files]
-; Mengambil semua hasil publish
 Source: "publish\all\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\NGPB Enterprise"; Filename: "{app}\*.exe"
-Name: "{commondesktop}\NGPB Enterprise"; Filename: "{app}\*.exe"; Tasks: desktopicon
+Name: "{group}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"
+Name: "{commondesktop}\NGPB Enterprise"; Filename: "{app}\Launcher.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\*.exe"; Description: "{cm:LaunchProgram,NGPB Enterprise}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Launcher.exe"; Description: "{cm:LaunchProgram,NGPB Enterprise}"; Flags: nowait postinstall skipifsilent
