@@ -5,7 +5,6 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- NAMA EXE JADI ngpb.exe + ICON SHIELD KEREN -->
     <AssemblyName>ngpb</AssemblyName>
     <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
     <Win32Icon>pbng_icon.ico</Win32Icon>
@@ -17,15 +16,10 @@
     <Content Include="pbng_icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <!-- SPLASH SCREEN KEREN PBNG -->
     <Content Include="splash_ngpb_800.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <!-- BACKGROUND CLIENT GAME KOTA HANCUR NEON -->
     <Content Include="background_client_game.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="background_launcher.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
