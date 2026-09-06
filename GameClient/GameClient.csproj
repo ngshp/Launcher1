@@ -5,7 +5,17 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- Ini yang bikin aplikasi bos punya ikon -->
-    
+    <!-- NAMA EXE JADI ngpb.exe + ICON SHIELD -->
+    <AssemblyName>ngpb</AssemblyName>
+    <ApplicationIcon>pbng_icon.ico</ApplicationIcon>
+    <Win32Icon>pbng_icon.ico</Win32Icon>
+    <Product>Point Blank Next Generation</Product>
+    <Company>PBNG Team</Company>
+    <Version>1.0.105</Version>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="pbng_icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
