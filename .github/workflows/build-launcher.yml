@@ -13,16 +13,17 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - name: Build Launcher + ngpb.exe Client Keren Icon
+      - name: Build Launcher + ngpb.exe KEREN
         run: |
+          Write-Host "=== BUILD LAUNCHER ==="
           cd PBNG-Ecosystem/Launcher
           dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true /p:DebugType=None /p:DebugSymbols=false
+          Write-Host "=== BUILD ngpb.exe CLIENT KEREN ==="
           cd ..\..\GameClient
           dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true /p:DebugType=None /p:DebugSymbols=false
-          Write-Host "=== CEK ngpb.exe ICON KEREN ==="
+          Write-Host "=== CEK HASIL BUILD ==="
           dir bin/Release/net8.0-windows/win-x64/publish/ngpb.exe
-          cd ..\PBNG-Ecosystem/Launcher
-          dir bin/Release/net8.0-windows/win-x64/publish/Launcher.exe
+          dir ..\PBNG-Ecosystem/Launcher/bin/Release/net8.0-windows/win-x64/publish/Launcher.exe
         shell: powershell
       - uses: actions/upload-artifact@v4
         with:
@@ -38,12 +39,12 @@ jobs:
     needs: build-launcher
     steps:
       - uses: actions/checkout@v4
-      - name: Download Launcher EXE ke folder yang bener
+      - name: Download Launcher EXE
         uses: actions/download-artifact@v4
         with:
           name: PBNG-Launcher-v360-exe
           path: PBNG-Ecosystem/Launcher/
-      - name: Download ngpb.exe Client ke folder publish
+      - name: Download ngpb.exe Client
         uses: actions/download-artifact@v4
         with:
           name: PBNG-Client-ngpb-exe
@@ -58,32 +59,32 @@ jobs:
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Chinese.isl" -Force
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Arabic.isl" -Force
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Persian.isl" -Force
-          Write-Host "=== CEK FILE ICON KEREN ==="
+          Write-Host "=== CEK ICON & BACKGROUND KEREN ==="
           dir PBNG-Ecosystem/Launcher/Launcher.exe
           dir GameClient/bin/Release/net8.0-windows/win-x64/publish/ngpb.exe
-          dir PBNG-Ecosystem/Launcher/*.bmp
           dir PBNG-Ecosystem/Launcher/*.ico
+          dir PBNG-Ecosystem/Launcher/*.bmp
           dir PBNG-Ecosystem/Launcher/*.png
-          dir GameClient/*.ico
-      - name: Build Installer FULL ngpb.exe + Icon Keren
+          dir GameClient/*.ico -ErrorAction SilentlyContinue
+          dir GameClient/*.png -ErrorAction SilentlyContinue
+      - name: Build Installer FULL KEREN
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: PBNG-Ecosystem/Launcher/PBNG-Setup.iss
-      - name: List output
+      - name: List Output Installer
         shell: powershell
         run: |
           Write-Host "=== OUTPUT INSTALLER ==="
-          dir *.exe
+          dir *.exe -ErrorAction SilentlyContinue
           dir PBNG-Ecosystem/*.exe -ErrorAction SilentlyContinue
           dir PBNG-Ecosystem/Launcher/*.exe -ErrorAction SilentlyContinue
-          dir ..\..\*.exe -ErrorAction SilentlyContinue
-          Get-ChildItem -Recurse -Filter "*.exe" | Select-Object FullName, Length | Format-Table -AutoSize
+          Get-ChildItem -Recurse -Filter "PBNG-Setup*.exe" | Select-Object FullName, Length | Format-Table -AutoSize
       - uses: actions/upload-artifact@v4
         with:
-          name: PBNG-Setup-v1.0.105-FULL-ngpb-KEREN
+          name: PBNG-Setup-v1.0.105-FULL-KEREN-ngpb
           path: |
             *.exe
             PBNG-Ecosystem/*.exe
-            PBNG-Ecosystem/Launcher/*.exe
+            PBNG-Setup-v1.0.105-FULL-KEREN-ngpb.exe
             PBNG-Setup-v1.0.105-FULL-ngpb.exe
             PBNG-Setup-v1.0.105.exe
