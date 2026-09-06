@@ -1,50 +1,55 @@
-; PBNG Launcher v1.0.105 - 7 BAHASA FINAL GREEN FIX
-#define MyAppName "PBNG Launcher"
+; PBNG Setup v1.0.105 - FIX FOR GITHUB RUNNER - HYBRID HERO
+#define MyAppName "Point Blank Next Generation"
 #define MyAppVersion "1.0.105"
-#define MyAppPublisher "PBNG Ecosystem"
-#define MyAppExeName "PBNG Launcher.exe"
+#define MyAppPublisher "PBNG Team"
+#define MyAppURL "https://github.com/ngshp/Launcher1"
 
 [Setup]
-AppId=PBNG-Launcher-105
+AppId={{PBNG-105-HYBRID-PRO}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-AppPublisherURL=https://ngshp.github.io/Launcher1
-DefaultDirName={autopf}\PBNG Launcher
-DefaultGroupName=PBNG Launcher
-DisableProgramGroupPage=yes
-OutputDir=Output
+AppPublisherURL={#MyAppURL}
+DefaultDirName={autopf}\{#MyAppName}
+DefaultGroupName={#MyAppName}
+AllowNoIcons=yes
+OutputDir=..\..\
 OutputBaseFilename=PBNG-Setup-v1.0.105
-Compression=lzma
-SolidCompression=yes
-WizardStyle=modern
+SetupIconFile=pbng_icon.ico
 WizardImageFile=installer_bg.bmp
 WizardSmallImageFile=installer_small.bmp
-SetupIconFile=pbng_icon.ico
-UninstallDisplayIcon={app}\{#MyAppExeName}
+Compression=lzma2/ultra64
+SolidCompression=yes
+WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64
-VersionInfoVersion=1.0.105
-VersionInfoProductVersion=1.0.105
+UninstallDisplayIcon={app}\Launcher.exe
 
 [Languages]
+; FIX: GitHub runner cuma punya Default.isl, gak ada Indonesian.isl
+; Kita pake Default aja untuk semua bahasa
 Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "indonesian"; MessagesFile: "compiler:Languages\Indonesian.isl"
-Name: "french"; MessagesFile: "compiler:Languages\French.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
-Name: "chinese"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
-Name: "arabic"; MessagesFile: "compiler:Languages\Arabic.isl"
-Name: "farsi"; MessagesFile: "compiler:Languages\Farsi.isl"
+Name: "indonesian"; MessagesFile: "compiler:Default.isl"
+Name: "french"; MessagesFile: "compiler:Default.isl"
+Name: "russian"; MessagesFile: "compiler:Default.isl"
+Name: "chinese"; MessagesFile: "compiler:Default.isl"
+Name: "arabic"; MessagesFile: "compiler:Default.isl"
+Name: "persian"; MessagesFile: "compiler:Default.isl"
+
+[Files]
+; Launcher yang udah include hero.png hybrid + icon square
+Source: "bin\Release\net8.0-windows\win-x64\publish\Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "hero.png"; DestDir: "{app}"; Flags: ignoreversion
+Source: "pbng_icon.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "installer_bg.bmp"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "installer_small.bmp"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+
+[Icons]
+Name: "{group}\{#MyAppName}"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\pbng_icon.ico"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\Launcher.exe"; Tasks: desktopicon; IconFilename: "{app}\pbng_icon.ico"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
-[Files]
-Source: "..\..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-
-[Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Launcher.exe"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
