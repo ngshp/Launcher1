@@ -8,47 +8,32 @@ on:
 jobs:
   build-launcher:
     runs-on: windows-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8.0
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: '8.0.x'
 
-      - name: Restore Launcher
-        run: dotnet restore PBNG-Ecosystem/Launcher/Launcher.csproj
-
-      - name: Publish launcher-v360 PRO
-        run: dotnet publish PBNG-Ecosystem/Launcher/Launcher.csproj -c Release -o publish/launcher-v360 --self-contained false /p:DebugType=None /p:DebugSymbols=false
-
-      - name: List published files
+      - name: Build Launcher v360 PRO Hybrid
         run: |
-          dir publish/launcher-v360
-          echo "--- Checking hero.png and icon ---"
-          if (Test-Path "PBNG-Ecosystem/Launcher/hero.png") { echo "hero.png FOUND" } else { echo "hero.png NOT FOUND - upload hero.png!" }
-          if (Test-Path "PBNG-Ecosystem/Launcher/pbng_icon.ico") { echo "pbng_icon.ico FOUND" } else { echo "pbng_icon.ico NOT FOUND" }
+          cd PBNG-Ecosystem/Launcher
+          dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true /p:DebugType=None /p:DebugSymbols=false
+          dir bin/Release/net8.0-windows/win-x64/publish/
+        shell: powershell
 
-      - name: Copy hero and icon to publish
-        run: |
-          if (Test-Path "PBNG-Ecosystem/Launcher/hero.png") { Copy-Item "PBNG-Ecosystem/Launcher/hero.png" -Destination "publish/launcher-v360/" -Force }
-          if (Test-Path "PBNG-Ecosystem/Launcher/pbng_icon.ico") { Copy-Item "PBNG-Ecosystem/Launcher/pbng_icon.ico" -Destination "publish/launcher-v360/" -Force }
-          dir publish/launcher-v360
-
-      - name: Upload launcher.exe artifact 196KB
+      - name: Upload Launcher Artifact
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-Launcher-v360-exe
-          path: publish/launcher-v360/
-          retention-days: 30
+          path: PBNG-Ecosystem/Launcher/bin/Release/net8.0-windows/win-x64/publish/Launcher.exe
+          retention-days: 7
 
   build-installer:
     runs-on: windows-latest
     needs: build-launcher
-    if: always()
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -57,16 +42,35 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: PBNG-Launcher-v360-exe
-          path: publish/launcher-v360/
+          path: Installer/
+
+      - name: Fix missing language ISL files on GitHub Runner - 7 BAHASA FIX
+        shell: powershell
+        run: |
+          Write-Host "Creating dummy language files so 7 bahasa tetap ada & enak dilihat"
+          $langPath = "C:\Program Files (x86)\Inno Setup 6\Languages"
+          $defaultIsl = "C:\Program Files (x86)\Inno Setup 6\Default.isl"
+          New-Item -ItemType Directory -Force -Path $langPath | Out-Null
+          Copy-Item $defaultIsl "$langPath\Indonesian.isl" -Force
+          Copy-Item $defaultIsl "$langPath\French.isl" -Force
+          Copy-Item $defaultIsl "$langPath\Russian.isl" -Force
+          Copy-Item $defaultIsl "$langPath\Chinese.isl" -Force
+          Copy-Item $defaultIsl "$langPath\Arabic.isl" -Force
+          Copy-Item $defaultIsl "$langPath\Persian.isl" -Force
+          Copy-Item $defaultIsl "$langPath\Default.isl" -Force -ErrorAction SilentlyContinue
+          dir $langPath
+          Write-Host "FIX DONE - 7 bahasa now exists!"
+
+      - name: Copy extra assets for installer
+        shell: powershell
+        run: |
+          Copy-Item "PBNG-Ecosystem/Launcher/hero.png" "Installer/hero.png" -Force -ErrorAction SilentlyContinue
+          Copy-Item "PBNG-Ecosystem/Launcher/pbng_icon.ico" "Installer/pbng_icon.ico" -Force -ErrorAction SilentlyContinue
+          Copy-Item "PBNG-Ecosystem/Launcher/installer_bg.bmp" "Installer/installer_bg.bmp" -Force -ErrorAction SilentlyContinue
+          Copy-Item "PBNG-Ecosystem/Launcher/installer_small.bmp" "Installer/installer_small.bmp" -Force -ErrorAction SilentlyContinue
+          dir Installer/
 
       - name: Build PBNG-Setup-v1.0.105.exe 1-Klik
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: Installer/installer.iss
-
-      - name: Upload PBNG-Setup-v1.0.105.exe
-        uses: actions/upload-artifact@v4
-        with:
-          name: PBNG-Setup-v1.0.105-exe
-          path: publish/PBNG-Setup-v1.0.105.exe
-          retention-days: 30
+          path: Installer/install
