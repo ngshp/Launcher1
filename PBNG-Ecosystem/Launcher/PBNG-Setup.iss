@@ -2,7 +2,7 @@
 #define MyAppVersion "1.0.105"
 
 [Setup]
-AppId={{PBNG-105-FINAL-96-IJO}}
+AppId={{PBNG-105-FINAL-97-IJO}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher=PBNG Team
@@ -28,22 +28,17 @@ Name: "arabic"; MessagesFile: "compiler:Default.isl"
 Name: "persian"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-; INI FIX UTAMA BOS - FILE YANG ADA DI FOLDER Installer/ HASIL DOWNLOAD
+; FIX LINE 37 - INI YANG BIKIN ERROR TADI - GANTI JADI Launcher.exe YANG ADA DI FOLDER Installer/
 Source: "Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
-; Extra assets dari PBNG-Ecosystem/Launcher/ yang ada di screenshot lu
 Source: "..\PBNG-Ecosystem\Launcher\hero.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\PBNG-Ecosystem\Launcher\pbng_icon.ico"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\PBNG-Ecosystem\Launcher\background_pbng.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\PBNG-Ecosystem\Launcher\installer_bg.bmp"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\PBNG-Ecosystem\Launcher\installer_small.bmp"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\pbng_icon.ico"
-Name: "{group}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\Launcher.exe"; Tasks: desktopicon; IconFilename: "{app}\pbng_icon.ico"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Run]
-Filename: "{app}\Launcher.exe"; Description: "Jalankan {#MyAppName}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Launcher.exe"; Flags: nowait postinstall skipifsilent
