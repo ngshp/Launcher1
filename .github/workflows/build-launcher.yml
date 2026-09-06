@@ -9,68 +9,45 @@ jobs:
   build-launcher:
     runs-on: windows-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
-      - name: Build Launcher v360 PRO Hybrid
+      - name: Build Launcher
         run: |
           cd PBNG-Ecosystem/Launcher
           dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true /p:DebugType=None /p:DebugSymbols=false
-          dir bin/Release/net8.0-windows/win-x64/publish/
         shell: powershell
-
-      - name: Upload Launcher Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: PBNG-Launcher-v360-exe
           path: PBNG-Ecosystem/Launcher/bin/Release/net8.0-windows/win-x64/publish/Launcher.exe
-          retention-days: 7
 
   build-installer:
     runs-on: windows-latest
     needs: build-launcher
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download launcher artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
           name: PBNG-Launcher-v360-exe
           path: Installer/
-
-      - name: Fix missing language ISL files on GitHub Runner - 7 BAHASA FIX
+      - name: Fix 7 bahasa ISL
         shell: powershell
         run: |
-          Write-Host "Creating dummy language files so 7 bahasa tetap ada & enak dilihat"
           $langPath = "C:\Program Files (x86)\Inno Setup 6\Languages"
-          $defaultIsl = "C:\Program Files (x86)\Inno Setup 6\Default.isl"
-          New-Item -ItemType Directory -Force -Path $langPath | Out-Null
-          Copy-Item $defaultIsl "$langPath\Indonesian.isl" -Force
-          Copy-Item $defaultIsl "$langPath\French.isl" -Force
-          Copy-Item $defaultIsl "$langPath\Russian.isl" -Force
-          Copy-Item $defaultIsl "$langPath\Chinese.isl" -Force
-          Copy-Item $defaultIsl "$langPath\Arabic.isl" -Force
-          Copy-Item $defaultIsl "$langPath\Persian.isl" -Force
-          Copy-Item $defaultIsl "$langPath\Default.isl" -Force -ErrorAction SilentlyContinue
-          dir $langPath
-          Write-Host "FIX DONE - 7 bahasa now exists!"
-
-      - name: Copy extra assets for installer
-        shell: powershell
-        run: |
-          Copy-Item "PBNG-Ecosystem/Launcher/hero.png" "Installer/hero.png" -Force -ErrorAction SilentlyContinue
-          Copy-Item "PBNG-Ecosystem/Launcher/pbng_icon.ico" "Installer/pbng_icon.ico" -Force -ErrorAction SilentlyContinue
-          Copy-Item "PBNG-Ecosystem/Launcher/installer_bg.bmp" "Installer/installer_bg.bmp" -Force -ErrorAction SilentlyContinue
-          Copy-Item "PBNG-Ecosystem/Launcher/installer_small.bmp" "Installer/installer_small.bmp" -Force -ErrorAction SilentlyContinue
+          Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Indonesian.isl" -Force
+          Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\French.isl" -Force
+          Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Russian.isl" -Force
+          dir $langPath\Indonesian.isl
           dir Installer/
-
-      - name: Build PBNG-Setup-v1.0.105.exe 1-Klik
+          dir PBNG-Ecosystem/Launcher/*.bmp
+          dir PBNG-Ecosystem/Launcher/*.ico
+      - name: Build Installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: Installer/install
+          path: Installer/installer.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PBNG-Setup-v1.0.105
+          path: PBNG-Setup-v1.0.105.exe
