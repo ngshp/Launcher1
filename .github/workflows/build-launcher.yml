@@ -28,10 +28,11 @@ jobs:
     needs: build-launcher
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - name: Download Launcher EXE
+        uses: actions/download-artifact@v4
         with:
           name: PBNG-Launcher-v360-exe
-          path: Installer/
+          path: PBNG-Ecosystem/Launcher/
       - name: Fix 7 bahasa ISL
         shell: powershell
         run: |
@@ -39,14 +40,13 @@ jobs:
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Indonesian.isl" -Force
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\French.isl" -Force
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Russian.isl" -Force
-          dir $langPath\Indonesian.isl
-          dir Installer/
+          dir PBNG-Ecosystem/Launcher/Launcher.exe
           dir PBNG-Ecosystem/Launcher/*.bmp
           dir PBNG-Ecosystem/Launcher/*.ico
-      - name: Build Installer
+      - name: Build Installer - OPSI A FINAL IJO
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: Installer/installer.iss
+          path: PBNG-Ecosystem/Launcher/PBNG-Setup.iss
       - uses: actions/upload-artifact@v4
         with:
           name: PBNG-Setup-v1.0.105
