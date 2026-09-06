@@ -1,7 +1,8 @@
 #define MyAppName "Point Blank Next Generation"
 #define MyAppVersion "1.0.105"
+
 [Setup]
-AppId={{PBNG-7BAHASA-FINAL-93}}
+AppId={{PBNG-105-FINAL-FIX-94}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher=PBNG Team
@@ -27,10 +28,10 @@ Name: "arabic"; MessagesFile: "compiler:Default.isl"
 Name: "persian"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "..\PBNG-Ecosystem\Launcher\bin\Release\net8.0-windows\win-x64\publish\Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\PBNG-Ecosystem\Launcher\hero.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\PBNG-Ecosystem\Launcher\pbng_icon.ico"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\PBNG-Ecosystem\Launcher\background_pbng.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\pbng_icon.ico"
