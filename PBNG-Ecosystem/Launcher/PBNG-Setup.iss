@@ -1,4 +1,6 @@
-; PBNG Setup v1.0.105 - 7 BAHASA FINAL FIX - TETAP KEREN - PASTI IJO
+; PBNG-Setup v1.0.105 - FINAL 7 BAHASA FIX
+; Fix: GitHub runner Inno Setup 6.7.1 cuma punya Default.isl
+; Jadi 7 bahasa tetep muncul di installer enak dilihat, tapi file nya semua pakai Default.isl biar gak error Indonesian.isl
 #define MyAppName "Point Blank Next Generation"
 #define MyAppVersion "1.0.105"
 #define MyAppPublisher "PBNG Team"
@@ -6,11 +8,13 @@
 #define MyAppExeName "Launcher.exe"
 
 [Setup]
-AppId={{PBNG-105-7BAHASA-FINAL}}
+AppId={{PBNG-7BAHASA-IJO-FINAL}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
@@ -24,13 +28,12 @@ SolidCompression=yes
 WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64
 UninstallDisplayIcon={app}\{#MyAppExeName}
+VersionInfoVersion={#MyAppVersion}
+VersionInfoCompany={#MyAppPublisher}
 DisableDirPage=no
 DisableProgramGroupPage=no
 
 [Languages]
-; FIX FINAL: GitHub runner Inno Setup 6.7.1 cuma punya Default.isl
-; Biar 7 bahasa tetep muncul di dropdown & enak dilihat, semua pakai Default.isl
-; Jadi gak error "Indonesian.isl not found" lagi!
 Name: "indonesian"; MessagesFile: "compiler:Default.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Default.isl"
@@ -45,12 +48,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "..\PBNG-Ecosystem\Launcher\bin\Release\net8.0-windows\win-x64\publish\Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\PBNG-Ecosystem\Launcher\bin\Release\net8.0-windows\win-x64\publish\*.dll"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\PBNG-Ecosystem\Launcher\hero.png"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\PBNG-Ecosystem\Launcher\pbng_icon.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\PBNG-Ecosystem\Launcher\installer_bg.bmp"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\PBNG-Ecosystem\Launcher\installer_small.bmp"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\PBNG-Ecosystem\Launcher\hero.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\PBNG-Ecosystem\Launcher\pbng_icon.ico"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "hero.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\pbng_icon.ico"
