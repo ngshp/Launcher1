@@ -28,7 +28,7 @@ jobs:
     needs: build-launcher
     steps:
       - uses: actions/checkout@v4
-      - name: Download Launcher EXE
+      - name: Download Launcher EXE ke folder yang bener
         uses: actions/download-artifact@v4
         with:
           name: PBNG-Launcher-v360-exe
@@ -40,14 +40,29 @@ jobs:
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Indonesian.isl" -Force
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\French.isl" -Force
           Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Russian.isl" -Force
+          Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Chinese.isl" -Force
+          Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Arabic.isl" -Force
+          Copy-Item "C:\Program Files (x86)\Inno Setup 6\Default.isl" "$langPath\Persian.isl" -Force
+          Write-Host "=== CEK FILE ==="
           dir PBNG-Ecosystem/Launcher/Launcher.exe
           dir PBNG-Ecosystem/Launcher/*.bmp
           dir PBNG-Ecosystem/Launcher/*.ico
-      - name: Build Installer - OPSI A FINAL IJO
+          dir PBNG-Ecosystem/Launcher/*.png
+      - name: Build Installer OPSI A
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: PBNG-Ecosystem/Launcher/PBNG-Setup.iss
+      - name: List output
+        shell: powershell
+        run: |
+          dir *.exe
+          dir PBNG-Ecosystem/*.exe
+          dir PBNG-Ecosystem/Launcher/*.exe
       - uses: actions/upload-artifact@v4
         with:
           name: PBNG-Setup-v1.0.105
-          path: PBNG-Setup-v1.0.105.exe
+          path: |
+            *.exe
+            PBNG-Ecosystem/*.exe
+            PBNG-Ecosystem/Launcher/*.exe
+            PBNG-Setup-v1.0.105.exe
