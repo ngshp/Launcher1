@@ -1,47 +1,72 @@
-name: Build PBNG Launcher v360 PRO
+name: Build PBNG Launcher v360 PRO + Installer
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build:
+  build-launcher:
     runs-on: windows-latest
+    
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup.NET 8
+      - name: Setup .NET 8.0
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore
+      - name: Restore Launcher
         run: dotnet restore PBNG-Ecosystem/Launcher/Launcher.csproj
 
-      - name: Publish launcher-v360 (sesuai gambar bos)
-        run: dotnet publish PBNG-Ecosystem/Launcher/Launcher.csproj -c Release -o C:\PBNG\publish\launcher-v360 --self-contained false
+      - name: Publish launcher-v360 PRO
+        run: dotnet publish PBNG-Ecosystem/Launcher/Launcher.csproj -c Release -o publish/launcher-v360 --self-contained false /p:DebugType=None /p:DebugSymbols=false
 
-      - name: Create ZIP FINAL
-        shell: powershell
+      - name: List published files
         run: |
-          cd C:\PBNG\publish\launcher-v360
-          Compress-Archive -Path * -DestinationPath PBNG-FULL-v1.0.105-FINAL.zip -Force
-          dir
+          dir publish/launcher-v360
+          echo "--- Checking hero.png and icon ---"
+          if (Test-Path "PBNG-Ecosystem/Launcher/hero.png") { echo "hero.png FOUND" } else { echo "hero.png NOT FOUND - upload hero.png!" }
+          if (Test-Path "PBNG-Ecosystem/Launcher/pbng_icon.ico") { echo "pbng_icon.ico FOUND" } else { echo "pbng_icon.ico NOT FOUND" }
 
-      - name: Upload launcher.exe artifact
+      - name: Copy hero and icon to publish
+        run: |
+          if (Test-Path "PBNG-Ecosystem/Launcher/hero.png") { Copy-Item "PBNG-Ecosystem/Launcher/hero.png" -Destination "publish/launcher-v360/" -Force }
+          if (Test-Path "PBNG-Ecosystem/Launcher/pbng_icon.ico") { Copy-Item "PBNG-Ecosystem/Launcher/pbng_icon.ico" -Destination "publish/launcher-v360/" -Force }
+          dir publish/launcher-v360
+
+      - name: Upload launcher.exe artifact 196KB
         uses: actions/upload-artifact@v4
         with:
           name: PBNG-Launcher-v360-exe
-          path: C:\PBNG\publish\launcher-v360\
+          path: publish/launcher-v360/
+          retention-days: 30
 
-      - name: Create Release
-        if: github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
+  build-installer:
+    runs-on: windows-latest
+    needs: build-launcher
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download launcher artifact
+        uses: actions/download-artifact@v4
         with:
-          tag_name: v1.0.106
-          name: PBNG Launcher v1.0.106 - AUTO UPDATE PRO
-          files: |
-            C:\PBNG\publish\launcher-v360\PBNG-FULL-v1.0.105-FINAL.zip
-            C:\PBNG\publish\launcher-v360\Launcher.exe
+          name: PBNG-Launcher-v360-exe
+          path: publish/launcher-v360/
+
+      - name: Build PBNG-Setup-v1.0.105.exe 1-Klik
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: Installer/installer.iss
+
+      - name: Upload PBNG-Setup-v1.0.105.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: PBNG-Setup-v1.0.105-exe
+          path: publish/PBNG-Setup-v1.0.105.exe
+          retention-days: 30
