@@ -2,17 +2,18 @@
 #define MyAppVersion "1.0.105"
 
 [Setup]
-AppId={{PBNG-105-FINAL-100-IJO}}
+AppId={{PBNG-105-FINAL-102-IJO-OPSI-A}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher=PBNG Team
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-OutputDir=..\
+; Output ke root biar gampang di-upload
+OutputDir=..\..\
 OutputBaseFilename=PBNG-Setup-v1.0.105
-SetupIconFile=..\PBNG-Ecosystem\Launcher\pbng_icon.ico
-WizardImageFile=..\PBNG-Ecosystem\Launcher\installer_bg.bmp
-WizardSmallImageFile=..\PBNG-Ecosystem\Launcher\installer_small.bmp
+SetupIconFile=pbng_icon.ico
+WizardImageFile=installer_bg.bmp
+WizardSmallImageFile=installer_small.bmp
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
@@ -28,9 +29,11 @@ Name: "arabic"; MessagesFile: "compiler:Default.isl"
 Name: "persian"; MessagesFile: "compiler:Default.isl"
 
 [Files]
+; FILE INI ADA KARENA DI-DOWNLOAD DI STEP SEBELUMNYA KE FOLDER INI!
 Source: "Launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\PBNG-Ecosystem\Launcher\hero.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\PBNG-Ecosystem\Launcher\background_pbng.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "hero.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "background_pbng.png"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "pbng_icon.ico"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\Launcher.exe"; IconFilename: "{app}\pbng_icon.ico"
